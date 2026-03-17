@@ -1,176 +1,257 @@
-/* --- THEME VARIABLES --- */
-:root {
-  --bg-color: #f8fafc;
-  --text-main: #0f172a;
-  --text-muted: #475569;
-  --primary: #0ea5e9;
-  --secondary: #6366f1;
-  --glass-bg: rgba(255, 255, 255, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.8);
-  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-  --icon-filter: none;
-  --img-glow: rgba(14, 165, 233, 0.2);
-  --border-hover: rgba(14, 165, 233, 0.5);
-}
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Ubuntu+Mono&display=swap');
 
-[data-theme="dark"] {
-  --bg-color: #0b1120;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --primary: #38bdf8;
-  --secondary: #818cf8;
-  --glass-bg: rgba(30, 41, 59, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.05);
-  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --icon-filter: invert(1);
-  --img-glow: rgba(56, 189, 248, 0.15);
-  --border-hover: rgba(56, 189, 248, 0.6);
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--bg-color); color: var(--text-main);
-  overflow-x: hidden; scroll-behavior: smooth;
+  font-family: 'Ubuntu', sans-serif;
+  overflow: hidden; 
+  background: radial-gradient(circle at top left, #e95420, #772953 40%, #2c001e);
+  color: #ffffff;
+  height: 100vh;
 }
 
-/* --- NAVBAR --- */
-nav {
-  position: fixed; top: 0; width: 100%; z-index: 1000;
-  background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--glass-border);
-  padding: 15px 8%; display: flex; justify-content: space-between; align-items: center;
+.ubuntu-os { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+.ubuntu-os.is-dragging { user-select: none; }
+
+/* --- LOGIN SCREEN --- */
+.ubuntu-login-screen {
+  height: 100vh; width: 100vw; background: inherit; position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
-.nav-brand { font-size: 1.5rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
-.nav-brand span { color: var(--primary); }
-.nav-menu { display: flex; align-items: center; gap: 30px; }
-.nav-links { list-style: none; display: flex; gap: 25px; }
-.nav-links a { color: var(--text-main); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: color 0.3s; }
-.nav-links a:hover { color: var(--primary); }
-
-.theme-btn {
-  background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main);
-  font-size: 1.2rem; cursor: pointer; border-radius: 50%; width: 45px; height: 45px;
-  display: flex; align-items: center; justify-content: center; transition: 0.3s;
-  box-shadow: var(--card-shadow);
+.ubuntu-login-screen::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(30px); z-index: 1;
 }
-.theme-btn:hover { transform: scale(1.1); border-color: var(--primary); }
-.hamburger { display: none; font-size: 1.8rem; cursor: pointer; color: var(--text-main); background: none; border: none; }
+.login-container { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; animation: fadeIn 0.8s ease-out; }
+.user-avatar { width: 100px; height: 100px; background-color: #E95420; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+.user-name { font-size: 1.5rem; margin-bottom: 20px; font-weight: bold; }
 
-/* --- GLOBAL LAYOUT --- */
-section { padding: 120px 8% 60px; max-width: 1200px; margin: auto; }
-.section-title {
-  font-size: 2.8rem; text-align: center; margin-bottom: 60px; font-weight: 800;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+.login-form { display: flex; align-items: center; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 8px 12px; width: 280px; transition: border 0.3s; }
+.login-form:focus-within { border-color: #E95420; }
+.login-form input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 1rem; }
+.login-form button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.2rem; }
+
+/* --- TOP BAR --- */
+.top-bar { background-color: rgba(0, 0, 0, 0.85); height: 28px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; font-size: 0.9rem; z-index: 100; font-weight: 500; }
+.top-bar.transparent { background-color: transparent; position: absolute; top: 0; width: 100%; z-index: 10;}
+.top-right { display: flex; gap: 15px; align-items: center;}
+
+/* --- DESKTOP & DOCK --- */
+.desktop-area { display: flex; flex: 1; position: relative; }
+
+/* Resizable Dock Base */
+.dock { 
+  background-color: rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; 
+  align-items: center; padding-top: 10px; gap: 12px; z-index: 50; 
+  border-right: 1px solid rgba(255,255,255,0.1); transition: width 0.3s ease;
+}
+.dock-icon { 
+  background: transparent; border: none; border-radius: 8px; cursor: pointer; 
+  transition: transform 0.2s, width 0.3s, height 0.3s, font-size 0.3s; 
+  position: relative; display: flex; align-items: center; justify-content: center;
+}
+.dock-icon:hover { background: rgba(255,255,255,0.1); transform: scale(1.05); }
+.dock-icon.active::after { content: ''; position: absolute; left: 0px; top: 50%; transform: translateY(-50%); width: 4px; height: 10px; background-color: #E95420; border-radius: 2px; }
+
+/* Dock Sizes */
+.dock.small { width: 50px; }
+.dock.small .dock-icon { width: 35px; height: 35px; font-size: 1.3rem; }
+
+.dock.medium { width: 65px; }
+.dock.medium .dock-icon { width: 48px; height: 48px; font-size: 1.8rem; }
+
+.dock.large { width: 85px; gap: 18px;}
+.dock.large .dock-icon { width: 65px; height: 65px; font-size: 2.3rem; }
+
+
+/* --- WINDOW STYLES & ANIMATIONS --- */
+.window-area { flex: 1; position: relative; overflow: hidden;}
+.ubuntu-window {
+  position: absolute; display: flex; flex-direction: column; 
+  background-color: #242424; border-radius: 10px; border: 1px solid #444;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6); overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease, visibility 0.3s, width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease;
+}
+.animated-open { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+.ubuntu-window.dragging { box-shadow: 0 20px 60px rgba(0,0,0,0.8); transition: none; }
+.ubuntu-window.maximized { border-radius: 0; border: none; }
+
+.window-header { background-color: #303030; height: 40px; display: flex; align-items: center; position: relative; cursor: grab; border-bottom: 1px solid #1a1a1a; justify-content: center;}
+.window-controls { display: flex; gap: 8px; position: absolute; left: 15px; align-items: center;}
+.window-title { font-weight: 700; color: #dfdfdf; font-size: 0.95rem; user-select: none; width: 100%; text-align: center;}
+
+.control { width: 13px; height: 13px; border-radius: 50%; cursor: pointer; transition: 0.2s; }
+.close { background-color: #FF5F56; } 
+.close:hover { background-color: #ff3b30; }
+.minimize { background-color: #FFBD2E; } 
+.minimize:hover { background-color: #ffaa00; }
+.maximize { background-color: #27C93F; } 
+.maximize:hover { background-color: #1fac33; }
+
+.app-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; background-color: #242424;}
+
+/* --- APP STYLES (Terminal, Browser, Experience, VS Code) --- */
+.terminal-app { background-color: #300A24; font-family: 'Ubuntu Mono', monospace; }
+.terminal-menubar { background-color: #303030; padding: 5px 15px; font-size: 0.85rem; color: #ccc; display: flex; gap: 15px; }
+.terminal-body { padding: 15px; overflow-y: auto; flex: 1; }
+.prompt-line { color: #fff; margin-bottom: 2px; }
+.output-line { color: #d3d7cf; margin-bottom: 10px; padding-left: 10px; white-space: pre-wrap; }
+.prompt-active { display: flex; align-items: center; margin-top: 5px; }
+.prompt-active .user { color: #8ae234; font-weight: bold; }
+.prompt-active .dir { color: #729fcf; font-weight: bold; }
+.prompt-active input { background: transparent; border: none; color: #fff; font-family: inherit; font-size: 1rem; flex: 1; outline: none; margin-left: 8px; }
+
+.nautilus-app { flex-direction: row; background-color: #242424;}
+.nautilus-sidebar { width: 180px; background-color: #1e1e1e; padding: 20px 10px; border-right: 1px solid #111;}
+.nautilus-sidebar ul { list-style: none; }
+.nautilus-sidebar li { padding: 8px 15px; margin-bottom: 5px; border-radius: 6px; cursor: pointer; color: #ccc; font-size: 0.95rem; }
+.nautilus-sidebar li:hover { background-color: rgba(255,255,255,0.05); }
+.nautilus-sidebar li.active { background-color: #E95420; color: #fff; }
+.nautilus-main { flex: 1; padding: 30px; overflow-y: auto; }
+.ubuntu-grid { display: flex; gap: 30px; flex-wrap: wrap; }
+.ubuntu-file { text-align: center; cursor: pointer; padding: 15px; border-radius: 8px; width: 100px; transition: 0.2s;}
+.ubuntu-file:hover { background: rgba(255,255,255,0.1); }
+.file-icon { font-size: 3.5rem; display: block; margin-bottom: 10px; }
+.ubuntu-file p { color: #fff; font-size: 0.9rem; }
+
+.vscode-app { flex-direction: row; background-color: #1e1e1e; font-family: 'Consolas', monospace;}
+.vscode-sidebar { width: 200px; background-color: #252526; padding: 15px; border-right: 1px solid #111;}
+.vscode-sidebar p { font-size: 0.8rem; color: #ccc; margin-bottom: 15px; letter-spacing: 1px; }
+.vscode-sidebar ul { list-style: none; color: #ccc; font-size: 0.9rem;}
+.vscode-sidebar li { padding: 5px 0; cursor: pointer; }
+.vscode-main { flex: 1; display: flex; flex-direction: column; }
+.vscode-tabs { background-color: #2d2d2d; display: flex; }
+.active-tab { background-color: #1e1e1e; padding: 8px 20px; color: #fff; border-top: 2px solid #007acc; }
+.vscode-code { padding: 20px; font-size: 1.1rem; flex: 1; overflow-y: auto; }
+
+.browser-app { background: #fff; color: #333; }
+.browser-nav { display: flex; gap: 10px; padding: 10px; background: #e0e0e0; align-items: center; border-bottom: 1px solid #ccc; }
+.nav-btn { cursor: pointer; filter: grayscale(1); }
+.url-bar { flex: 1; padding: 8px 15px; border-radius: 20px; border: 1px solid #ccc; background: #f1f1f1; outline: none; pointer-events: none; }
+.browser-body { padding: 30px; overflow-y: auto; flex: 1;}
+.search-box { max-width: 600px; margin: 20px auto; padding: 12px 20px; border-radius: 24px; border: 1px solid #dfe1e5; box-shadow: 0 1px 6px rgba(32,33,36,.28); }
+.search-results { max-width: 600px; margin: 0 auto; }
+.search-results h3 a { color: #1a0dab; text-decoration: none; font-size: 1.2rem; }
+.search-results p { color: #4d5156; font-size: 0.9rem; margin-top: 5px; }
+
+.experience-app { background-color: #1e1e1e; padding: 30px; overflow-y: auto; }
+.experience-body { max-width: 700px; margin: 0 auto; color: #fff;}
+.exp-timeline-item { position: relative; padding-left: 25px; margin-bottom: 30px; border-left: 2px solid #333;}
+.exp-dot { position: absolute; left: -7px; top: 5px; width: 12px; height: 12px; background-color: #E95420; border-radius: 50%; box-shadow: 0 0 10px rgba(233,84,32,0.6);}
+.exp-timeline-item h3 { font-size: 1.3rem; margin-bottom: 5px; color: #f8fafc;}
+.exp-duration { font-size: 0.9rem; color: #E95420; margin-bottom: 10px; font-weight: bold;}
+.exp-desc { color: #d3d7cf; line-height: 1.6; font-size: 0.95rem;}
+.playzone-app { overflow-y: auto; }
+
+
+/* =========================================
+   📱 ULTRA MOBILE RESPONSIVENESS
+========================================= */
+@media (max-width: 768px) {
+  /* Dock shifts to bottom like Android/iPhone */
+  .desktop-area { flex-direction: column-reverse; }
+  
+  .dock { 
+    width: 100% !important; /* Override inline sizes */
+    height: 75px; 
+    flex-direction: row; 
+    padding: 0 15px; 
+    justify-content: space-around; 
+    border-right: none; 
+    border-top: 1px solid rgba(255,255,255,0.1); 
+    background-color: rgba(0, 0, 0, 0.9);
+  }
+  
+  /* Reset icon size for mobile so it fits */
+  .dock-icon { width: 45px !important; height: 45px !important; font-size: 1.6rem !important; }
+  
+  .dock-icon.active::after {
+    left: 50%; top: auto; bottom: -5px; transform: translateX(-50%);
+    width: 20px; height: 4px;
+  }
+  
+  /* Windows become Full Screen automatically */
+  .window-area { position: absolute; width: 100%; height: calc(100% - 75px); top: 0; left: 0;}
+  
+  .ubuntu-window { 
+    top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; 
+    border-radius: 0; transform: none !important; 
+  }
+  
+  .window-header { cursor: default; } /* Remove grab pointer on mobile */
+
+  /* App Specific Tweaks for smaller screens */
+  .nautilus-app { flex-direction: column; }
+  .nautilus-sidebar { width: 100%; height: auto; display: flex; overflow-x: auto; padding: 10px; border-right: none; border-bottom: 1px solid #111;}
+  .nautilus-sidebar ul { display: flex; gap: 10px; }
+  .nautilus-main { padding: 15px; }
+  
+  .vscode-app { flex-direction: column; }
+  .vscode-sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #111; padding: 10px;}
+  .vscode-sidebar ul { display: flex; gap: 15px; }
+  
+  .experience-app { padding: 15px; }
 }
 
-/* Image Styling */
-@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-.floating-img { 
-  width: 100%; max-width: 450px; height: auto; 
-  animation: float 5s ease-in-out infinite; 
-  filter: drop-shadow(0 20px 40px var(--img-glow));
-  border-radius: 20px;
+
+
+/* =========================================
+   🎮 PLAYZONE & GAMES STYLES (Fixed)
+========================================= */
+.playzone-container { padding: 20px; height: 100%; display: flex; flex-direction: column; overflow-y: auto; }
+
+/* Game Menu Grid */
+.game-icons-grid { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; margin-top: 20px;}
+.game-icon-btn { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s;}
+.game-icon-btn:hover { transform: translateY(-5px); }
+.icon-box { 
+  width: 80px; height: 80px; background-color: #2b2b2b; border-radius: 20px; 
+  display: flex; justify-content: center; align-items: center; font-size: 3rem; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 10px; border: 1px solid #444;
 }
+.game-icon-btn p { color: #fff; font-weight: 500; font-size: 1rem; }
 
-.btn {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: #fff; border: none; padding: 14px 32px; border-radius: 30px;
-  font-size: 1rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block;
-  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2); transition: 0.3s transform, 0.3s box-shadow;
+/* Game Header & Buttons */
+.game-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;}
+.back-btn { background: transparent; border: none; color: #E95420; font-size: 1rem; cursor: pointer; font-weight: bold; }
+.back-btn:hover { color: #ff6b35; }
+.game-overlay { 
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+  background: rgba(0,0,0,0.8); display: flex; flex-direction: column; 
+  justify-content: center; align-items: center; z-index: 10; border-radius: 8px;
 }
-.btn:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(14, 165, 233, 0.4); color: #fff;}
+.play-btn { background-color: #E95420; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem;}
+.play-btn:hover { background-color: #ff6b35; transform: scale(1.05); }
 
-.glass-card {
-  background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border); border-radius: 24px; padding: 35px; 
-  box-shadow: var(--card-shadow); transition: transform 0.3s, border-color 0.3s;
+/* Dev Memory Match Game */
+.memory-grid { 
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; 
+  max-width: 350px; margin: 20px auto 0; width: 100%;
 }
-.glass-card:hover { border-color: var(--border-hover); }
-
-/* --- SECTIONS --- */
-.hero { display: flex; align-items: center; justify-content: space-between; gap: 50px; min-height: 100vh; padding-top: 150px;}
-.hero-text { flex: 1; }
-.hero-text h1 { font-size: 4rem; line-height: 1.1; margin-bottom: 20px; font-weight: 800; }
-.hero-text h1 span { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.hero-text p { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 30px; line-height: 1.7; max-width: 500px; }
-.hero-visual { flex: 1; display: flex; justify-content: center; position: relative;}
-
-/* Behind image glow */
-.hero-visual::before {
-  content: ''; position: absolute; width: 300px; height: 300px;
-  background: var(--primary); filter: blur(100px); opacity: 0.2; border-radius: 50%; z-index: -1;
+.memory-card { 
+  background-color: transparent; width: 100%; aspect-ratio: 1; 
+  perspective: 1000px; cursor: pointer; 
 }
-
-.about-wrapper { display: flex; align-items: center; gap: 50px; }
-.about-img-box { flex: 1; display: flex; justify-content: center; position: relative;}
-.about-text-box { flex: 1.2; }
-.about-text-box p { font-size: 1.1rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 20px; }
-
-/* EXPERIENCE TIMELINE */
-.timeline { border-left: 3px solid var(--primary); padding-left: 30px; margin-left: 20px; }
-.timeline-item { position: relative; margin-bottom: 40px; }
-.timeline-item:last-child { margin-bottom: 0; }
-.timeline-item::before { 
-  content: ''; position: absolute; left: -41px; top: 5px; width: 18px; height: 18px; 
-  background: var(--bg-color); border: 4px solid var(--primary); border-radius: 50%; transition: 0.3s;
+.memory-card-inner { 
+  position: relative; width: 100%; height: 100%; text-align: center; 
+  transition: transform 0.4s; transform-style: preserve-3d; 
 }
-.timeline-item:hover::before { background: var(--primary); box-shadow: 0 0 15px var(--primary); }
-.timeline-item h3 { color: var(--text-main); font-size: 1.4rem; margin-bottom: 8px; }
-.timeline-item h4 { color: var(--primary); font-size: 0.95rem; margin-bottom: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;}
-.timeline-item p { color: var(--text-muted); line-height: 1.7; font-size: 1.05rem;}
-
-/* PROJECTS GRID */
-.projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
-.project-card { display: flex; flex-direction: column; justify-content: space-between; }
-.project-card:hover { transform: translateY(-10px); }
-.project-card h3 { color: var(--text-main); font-size: 1.5rem; margin-bottom: 15px; }
-.project-card p { color: var(--text-muted); line-height: 1.7; margin-bottom: 25px; flex-grow: 1;}
-.tech-tags { display: flex; gap: 10px; flex-wrap: wrap; }
-.tech-tag { background: rgba(14, 165, 233, 0.1); color: var(--primary); border: 1px solid rgba(14, 165, 233, 0.3); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
-
-/* SKILLS GRID */
-.skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 25px; justify-items: center; }
-.skill-card { width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; padding: 25px 15px;}
-.skill-card:hover { transform: translateY(-8px); }
-.skill-card img { width: 60px; height: 60px; filter: grayscale(0.5); transition: 0.3s; }
-.skill-card:hover img { filter: grayscale(0) drop-shadow(0 5px 15px var(--img-glow)); transform: scale(1.1); }
-.skill-card span { font-weight: 600; font-size: 1rem; color: var(--text-main); }
-.github-icon { filter: var(--icon-filter); }
-
-/* GAMES SECTION */
-.games-wrapper { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; justify-items: center; }
-.game-container { width: 100%; max-width: 400px; text-align: center; display: flex; flex-direction: column; align-items: center; }
-.game-container h3 { color: var(--text-main); margin-bottom: 20px; font-size: 1.5rem; font-weight: 700; }
-
-/* Typing Test CSS */
-.typing-area { background: rgba(0,0,0,0.02); padding: 20px; border-radius: 12px; border: 1px solid var(--glass-border); width: 100%; margin-bottom: 20px;}
-[data-theme="dark"] .typing-area { background: rgba(0,0,0,0.2); }
-#code-quote { font-family: 'Courier New', Courier, monospace; color: var(--primary); font-size: 1.2rem; min-height: 50px; margin-bottom: 15px; display: block; font-weight: bold;}
-#typing-input { width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--bg-color); color: var(--text-main); font-family: monospace; font-size: 1rem; transition: 0.3s;}
-#typing-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 10px rgba(14, 165, 233, 0.2); }
-
-/* Snake Game CSS */
-#snake-canvas { background-color: #020617; border: 2px solid var(--glass-border); border-radius: 12px; box-shadow: 0 10px 30px var(--img-glow); margin-bottom: 20px;}
-
-/* CONTACT SECTION */
-.contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; }
-.contact-info p { margin-bottom: 15px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;}
-.contact-form input, .contact-form textarea { 
-  width: 100%; padding: 15px; margin-bottom: 20px; 
-  background: var(--bg-color); color: var(--text-main); 
-  border: 1px solid var(--glass-border); border-radius: 12px; 
-  font-family: inherit; font-size: 1rem; transition: 0.3s;
+.memory-card.flipped .memory-card-inner { transform: rotateY(180deg); }
+.memory-card-front, .memory-card-back { 
+  position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; 
+  backface-visibility: hidden; display: flex; justify-content: center; align-items: center; 
+  font-size: 1.8rem; border-radius: 8px; border: 1px solid #444; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
-.contact-form input:focus, .contact-form textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 10px rgba(14, 165, 233, 0.1); }
+.memory-card-front { background-color: #2b2b2b; color: #E95420; }
+.memory-card-back { background-color: #1e1e1e; transform: rotateY(180deg); }
 
-@media (max-width: 900px) {
-  .hero { flex-direction: column-reverse; text-align: center; padding-top: 120px; gap: 30px;}
-  .about-wrapper { flex-direction: column; text-align: center; }
-  .hamburger { display: block; }
-  .nav-menu { position: absolute; top: 70px; left: -100%; width: 100%; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); flex-direction: column; padding: 30px 0; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-bottom: 1px solid var(--glass-border);}
-  .nav-menu.active { left: 0; }
-  .nav-links { flex-direction: column; align-items: center; gap: 20px; width: 100%; }
-}
+/* Mobile D-Pad Controls (Only shows on mobile) */
+.mobile-dpad { margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.dpad-row { display: flex; gap: 15px; }
+.dpad-btn { width: 50px; height: 50px; background-color: #333; color: #fff; border: 1px solid #555; border-radius: 10px; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
+.dpad-btn:active { background-color: #E95420; border-color: #E95420;}
+
+@media (min-width: 768px) { .mobile-dpad { display: none; } }
+

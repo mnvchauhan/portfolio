@@ -1,102 +1,83 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const Playzone = ({ theme }) => {
-  // --- TYPING TEST STATE ---
-  const snippets = ["from flask import Flask", "SELECT * FROM users;", "def analyze_traffic(data):", "docker build -t webapp .", "git commit -m 'Fixed CSS'"];
-  const [quote, setQuote] = useState(snippets[0]);
-  const [typedText, setTypedText] = useState('');
-  const [time, setTime] = useState(0);
-  const [wpm, setWpm] = useState(0);
-  const [isTyping, setIsTyping] = useState(false);
-  const timerRef = useRef(null);
-  const startTimeRef = useRef(null);
+  const [activeView, setActiveView] = useState('menu'); 
 
-  const startTypingTest = () => {
-    setQuote(snippets[Math.floor(Math.random() * snippets.length)]);
-    setTypedText('');
-    setTime(0);
-    setWpm(0);
-    setIsTyping(false);
-    clearInterval(timerRef.current);
-  };
-
-  const handleTyping = (e) => {
-    const val = e.target.value;
-    setTypedText(val);
-
-    if (!isTyping) {
-      setIsTyping(true);
-      startTimeRef.current = new Date();
-      timerRef.current = setInterval(() => {
-        setTime(Math.floor((new Date() - startTimeRef.current) / 1000));
-      }, 1000);
-    }
-
-    if (val === quote) {
-      clearInterval(timerRef.current);
-      const timeTakenMinutes = (new Date() - startTimeRef.current) / 1000 / 60;
-      const words = quote.split(' ').length;
-      setWpm(Math.round(words / timeTakenMinutes));
-      setIsTyping(false); // Disable input logic handled via state if needed
-    }
-  };
-
-  // --- SNAKE GAME STATE & REF ---
+  // --- SNAKE GAME STATE ---
   const canvasRef = useRef(null);
   const gameLoopRef = useRef(null);
+  const [snakeState, setSnakeState] = useState('idle'); 
+  const [score, setScore] = useState(0);
+  const directionRef = useRef("RIGHT");
 
   const startSnake = () => {
+    setSnakeState('playing');
+    setScore(0);
     clearInterval(gameLoopRef.current);
+    
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const box = 10;
-    let snake = [{ x: 10 * box, y: 10 * box }];
-    let food = { x: Math.floor(Math.random() * 24 + 1) * box, y: Math.floor(Math.random() * 24 + 1) * box };
-    let d = "RIGHT";
+    const box = 15;
+    const canvasSize = 300; 
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
+
+    let snake = [{ x: 9 * box, y: 9 * box }];
+    let food = { x: Math.floor(Math.random() * 19) * box, y: Math.floor(Math.random() * 19) * box };
+    directionRef.current = "RIGHT";
 
     const handleKeyDown = (e) => {
       if ([37, 38, 39, 40].includes(e.keyCode)) e.preventDefault();
-      if (e.keyCode === 37 && d !== "RIGHT") d = "LEFT";
-      else if (e.keyCode === 38 && d !== "DOWN") d = "UP";
-      else if (e.keyCode === 39 && d !== "LEFT") d = "RIGHT";
-      else if (e.keyCode === 40 && d !== "UP") d = "DOWN";
+      if (e.keyCode === 37 && directionRef.current !== "RIGHT") directionRef.current = "LEFT";
+      else if (e.keyCode === 38 && directionRef.current !== "DOWN") directionRef.current = "UP";
+      else if (e.keyCode === 39 && directionRef.current !== "LEFT") directionRef.current = "RIGHT";
+      else if (e.keyCode === 40 && directionRef.current !== "UP") directionRef.current = "DOWN";
     };
+    
     document.addEventListener("keydown", handleKeyDown);
 
     const drawSnake = () => {
-      ctx.fillStyle = theme === 'dark' ? '#020617' : '#f8fafc';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#1e1e1e';
+      ctx.fillRect(0, 0, canvasSize, canvasSize);
       
-      snake.forEach((seg, i) => {
-        ctx.fillStyle = i === 0 ? "#0ea5e9" : "#38bdf8";
-        ctx.fillRect(seg.x, seg.y, box, box);
-      });
-      ctx.fillStyle = "#6366f1";
+      ctx.fillStyle = "#8ae234"; 
       ctx.fillRect(food.x, food.y, box, box);
+
+      snake.forEach((seg, i) => {
+        ctx.fillStyle = i === 0 ? "#E95420" : "#ff7b4f"; 
+        ctx.fillRect(seg.x, seg.y, box, box);
+        ctx.strokeStyle = '#1e1e1e';
+        ctx.strokeRect(seg.x, seg.y, box, box);
+      });
 
       let snakeX = snake[0].x;
       let snakeY = snake[0].y;
+      let d = directionRef.current;
       
       if (d === "LEFT") snakeX -= box;
       if (d === "UP") snakeY -= box;
       if (d === "RIGHT") snakeX += box;
       if (d === "DOWN") snakeY += box;
 
+      if (snakeX < 0) snakeX = canvasSize - box;
+      else if (snakeX >= canvasSize) snakeX = 0;
+      
+      if (snakeY < 0) snakeY = canvasSize - box;
+      else if (snakeY >= canvasSize) snakeY = 0;
+
       if (snakeX === food.x && snakeY === food.y) {
-        food = { x: Math.floor(Math.random() * 24 + 1) * box, y: Math.floor(Math.random() * 24 + 1) * box };
+        setScore(s => s + 1);
+        food = { x: Math.floor(Math.random() * 19) * box, y: Math.floor(Math.random() * 19) * box };
       } else {
         snake.pop();
       }
 
       let newHead = { x: snakeX, y: snakeY };
 
-      if (snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || snake.some(s => s.x === newHead.x && s.y === newHead.y)) {
+      if (snake.some(s => s.x === newHead.x && s.y === newHead.y)) {
         clearInterval(gameLoopRef.current);
-        ctx.fillStyle = "rgba(0,0,0,0.7)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0ea5e9";
-        ctx.font = "20px Arial";
-        ctx.fillText("Game Over", 70, 130);
+        setSnakeState('gameover');
         document.removeEventListener("keydown", handleKeyDown);
         return;
       }
@@ -106,43 +87,140 @@ const Playzone = ({ theme }) => {
     gameLoopRef.current = setInterval(drawSnake, 100);
   };
 
+  const changeDir = (dir) => {
+    if (dir === "LEFT" && directionRef.current !== "RIGHT") directionRef.current = "LEFT";
+    if (dir === "UP" && directionRef.current !== "DOWN") directionRef.current = "UP";
+    if (dir === "RIGHT" && directionRef.current !== "LEFT") directionRef.current = "RIGHT";
+    if (dir === "DOWN" && directionRef.current !== "UP") directionRef.current = "DOWN";
+  };
+
+  useEffect(() => {
+    if (activeView !== 'snake') {
+      clearInterval(gameLoopRef.current);
+      setSnakeState('idle');
+    }
+  }, [activeView]);
+
+  // --- DEV MEMORY MATCH STATE ---
+  const techIcons = ['🐍', '🐳', '☁️', '🌐', '🗄️', '🐧'];
+  const [cards, setCards] = useState([]);
+  const [flipped, setFlipped] = useState([]);
+  const [matches, setMatches] = useState(0);
+
+  const startMemoryGame = () => {
+    const shuffled = [...techIcons, ...techIcons]
+      .sort(() => Math.random() - 0.5)
+      .map((emoji, idx) => ({ id: idx, emoji, isFlipped: false, isMatched: false }));
+    setCards(shuffled);
+    setFlipped([]);
+    setMatches(0);
+  };
+
+  useEffect(() => {
+    if (activeView === 'memory' && cards.length === 0) startMemoryGame();
+  }, [activeView]);
+
+  useEffect(() => {
+    if (flipped.length === 2) {
+      const match = cards[flipped[0]].emoji === cards[flipped[1]].emoji;
+      setTimeout(() => {
+        setCards(prev => prev.map((c, i) => {
+          if (i === flipped[0] || i === flipped[1]) {
+            return match ? { ...c, isMatched: true } : { ...c, isFlipped: false };
+          }
+          return c;
+        }));
+        setFlipped([]);
+        if (match) setMatches(m => m + 1);
+      }, 800);
+    }
+  }, [flipped, cards]);
+
+  const handleCardClick = (index) => {
+    if (flipped.length >= 2 || cards[index].isFlipped || cards[index].isMatched) return;
+    setCards(prev => prev.map((c, i) => i === index ? { ...c, isFlipped: true } : c));
+    setFlipped([...flipped, index]);
+  };
+
   return (
-    <section id="playzone">
-      <h2 className="section-title">The Dev Arcade</h2>
-      <div className="games-wrapper">
-        
-        {/* Typing Game */}
-        <div className="glass-card game-container">
-          <h3>Dev Typing Speed</h3>
-          <div className="typing-area">
-            <span id="code-quote">{quote}</span>
-            <input 
-              type="text" 
-              id="typing-input" 
-              placeholder="Type the code here..." 
-              autoComplete="off"
-              value={typedText}
-              onChange={handleTyping}
-              disabled={typedText === quote && typedText !== ''}
-            />
+    <div className="playzone-container">
+      
+      {activeView === 'menu' && (
+        <>
+          <h2 style={{color: '#E95420', marginBottom: '20px', textAlign: 'center'}}>Games Arcade</h2>
+          <div className="game-icons-grid">
+            <div className="game-icon-btn" onClick={() => setActiveView('snake')}>
+              <div className="icon-box">🐍</div>
+              <p>Ubuntu Snake</p>
+            </div>
+            <div className="game-icon-btn" onClick={() => setActiveView('memory')}>
+              <div className="icon-box">🧩</div>
+              <p>Dev Memory</p>
+            </div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: '20px', fontWeight: 'bold' }}>
-            <div>Time: <span style={{ color: 'var(--primary)', fontSize: '1.2rem' }}>{time}</span>s</div>
-            <div>WPM: <span style={{ color: 'var(--primary)', fontSize: '1.2rem' }}>{wpm}</span></div>
+        </>
+      )}
+
+      {activeView === 'snake' && (
+        <div className="game-screen" style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <div className="game-header" style={{width: '100%', maxWidth: '300px'}}>
+            <button className="back-btn" onClick={() => setActiveView('menu')}>⬅️ Back</button>
+            <h3 style={{color: '#fff'}}>Score: {score}</h3>
           </div>
-          <button className="btn" onClick={startTypingTest} style={{ width: '100%' }}>Next Snippet</button>
-        </div>
+          
+          <div className="canvas-container" style={{ position: 'relative', width: '100%', maxWidth: '300px' }}>
+            {snakeState !== 'playing' && (
+              <div className="game-overlay">
+                {snakeState === 'gameover' ? <p style={{color: '#ff4444', marginBottom: '10px', fontSize: '1.2rem', fontWeight: 'bold'}}>Oops! Crashed.</p> : null}
+                <button className="play-btn" onClick={startSnake}>Tap to Play</button>
+              </div>
+            )}
+            <canvas ref={canvasRef} style={{ width: '100%', height: 'auto', border: '2px solid #444', borderRadius: '8px', display: 'block', backgroundColor: '#1e1e1e' }}></canvas>
+          </div>
 
-        {/* Snake Game */}
-        <div className="glass-card game-container">
-          <h3>Neon Snake</h3>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '15px' }}>Use Arrow Keys to Play</p>
-          <canvas ref={canvasRef} id="snake-canvas" width="250" height="250"></canvas>
-          <button className="btn" onClick={startSnake} style={{ width: '100%' }}>Play Snake</button>
+          <div className="mobile-dpad">
+            <button className="dpad-btn up" onClick={() => changeDir('UP')}>▲</button>
+            <div className="dpad-row">
+              <button className="dpad-btn left" onClick={() => changeDir('LEFT')}>◀</button>
+              <button className="dpad-btn down" onClick={() => changeDir('DOWN')}>▼</button>
+              <button className="dpad-btn right" onClick={() => changeDir('RIGHT')}>▶</button>
+            </div>
+          </div>
         </div>
+      )}
 
-      </div>
-    </section>
+      {activeView === 'memory' && (
+        <div className="game-screen">
+          <div className="game-header">
+            <button className="back-btn" onClick={() => setActiveView('menu')}>⬅️ Back</button>
+            <h3 style={{color: '#fff'}}>Matches: {matches}/6</h3>
+          </div>
+
+          {matches === 6 ? (
+            <div className="win-screen" style={{textAlign: 'center', marginTop: '40px'}}>
+              <h2 style={{color: '#8ae234', fontSize: '2rem'}}>You Won! 🎉</h2>
+              <button className="play-btn" onClick={startMemoryGame} style={{marginTop: '20px'}}>Play Again</button>
+            </div>
+          ) : (
+            <div className="memory-grid">
+              {cards.map((card, index) => (
+                <div 
+                  key={card.id} 
+                  className={`memory-card ${card.isFlipped || card.isMatched ? 'flipped' : ''}`}
+                  onClick={() => handleCardClick(index)}
+                >
+                  <div className="memory-card-inner">
+                    <div className="memory-card-front">?</div>
+                    <div className="memory-card-back">{card.emoji}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+    </div>
   );
 };
 
