@@ -195,7 +195,7 @@ function App() {
             <div className="nautilus-main">
               <h2>Home / Projects</h2>
               <div className="ubuntu-grid">
-                <div className="ubuntu-file" onClick={() => window.open('https://github.com/mnvchauhan/makemypdfs', '_blank')}><span className="file-icon">📁</span><p>MakeMyPDFs</p></div>
+                <div className="ubuntu-file" onClick={() => window.open('https://mnvchauhan.pythonanywhere.com/', '_blank')}><span className="file-icon">📁</span><p>MakeMyPDFs</p></div>
                 <div className="ubuntu-file"><span className="file-icon">📁</span><p>E_Learning</p></div>
                 <div className="ubuntu-file"><span className="file-icon">📄</span><p>QR_Gen.py</p></div>
               </div>
