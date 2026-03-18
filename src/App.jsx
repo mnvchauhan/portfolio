@@ -22,7 +22,6 @@ function App() {
   ]);
   const terminalEndRef = useRef(null);
 
-  // --- 🔊 SOUND EFFECTS ---
   const playSound = useCallback((type) => {
     const soundUrls = {
       startup: 'https://upload.wikimedia.org/wikipedia/commons/2/23/Ubuntu_Startup.ogg',
@@ -36,7 +35,6 @@ function App() {
     }
   }, []);
 
-  // --- BOOT EFFECT ---
   useEffect(() => {
     const bootSequence = [
       "Loading Linux kernel 5.15.0-101-generic...",
@@ -54,42 +52,53 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // --- 🚀 REAL PYTHON CODE EXECUTION (FIXED) ---
-  const defaultPythonCode = '# Welcome to Python Playground!\n\ndef calc_sum(a, b):\n    return a + b\n\nprint("Sum is:", calc_sum(10, 20))\nprint("Hire Manav Chauhan!")';
+  // --- 🚀 REAL PYTHON EXECUTION (OFFLINE IN BROWSER VIA SKULPT) ---
+  const defaultPythonCode = '# Welcome to Python Playground!\n\nname = "Manav"\na = 50\nb = 50\n\nprint("Total is:", a + b)\nprint("Hire " + name + " Chauhan!")';
   const [editorCode, setEditorCode] = useState(defaultPythonCode);
   const [editorOutput, setEditorOutput] = useState([]);
   const [isExecuting, setIsExecuting] = useState(false); 
 
+  const loadScript = (src) => new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) return resolve();
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+
   const runCode = async () => {
     setIsExecuting(true);
-    setEditorOutput(['manav@ubuntu:~$ Executing Python code... Please wait...', '']);
+    setEditorOutput(['manav@ubuntu:~$ Running Python locally... Please wait...']);
     
     try {
-      // Piston API for real execution (Version fixed to 3.10.0 to prevent errors)
-      const response = await fetch('https://emacs.piston.rs/api/v2/execute', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          language: 'python',
-          version: '3.10.0', 
-          files: [{ name: "main.py", content: editorCode }]
-        })
+      // Load Skulpt (Lightweight Python to JS compiler)
+      await loadScript("https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js");
+      await loadScript("https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js");
+
+      let outArr = ['[Execution Successful] ✅', ''];
+
+      window.Sk.configure({
+        output: (text) => {
+          if (text !== '\n') outArr.push(text); // Capture print statements
+        },
+        read: (x) => {
+          if (window.Sk.builtinFiles === undefined || window.Sk.builtinFiles["files"][x] === undefined)
+            throw "File not found: '" + x + "'";
+          return window.Sk.builtinFiles["files"][x];
+        }
       });
+
+      // Execute the code
+      await window.Sk.misceval.asyncToPromise(() => 
+        window.Sk.importMainWithBody("<stdin>", false, editorCode, true)
+      );
       
-      const result = await response.json();
-      
-      if (result.run && result.run.output !== undefined) {
-        setEditorOutput(['[Execution Successful] ✅', '', ...result.run.output.split('\n')]);
-      } else { 
-        throw new Error(result.message || 'Compiler Server Error'); 
-      }
+      setEditorOutput(outArr);
     } catch (err) {
-      setEditorOutput([
-        `[Network Error] Execution server is unreachable.`,
-        `Error Details: ${err.message}`,
-        `Make sure you are connected to the internet.`
-      ]);
+      setEditorOutput(['[Python Error] ❌', err.toString()]);
     }
+    
     setIsExecuting(false);
   };
 
@@ -107,22 +116,29 @@ function App() {
     if (terminalEndRef.current) terminalEndRef.current.scrollIntoView({ behavior: 'smooth' });
   }, [termHistory]);
 
-  // --- 📱 FULLY LOADED APPS (FIXED TERMINAL LOGO) ---
-  const terminalIconUrl = "https://img.icons8.com/color/512/console.png"; 
   const vscodeIconUrl = "https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg";
+  const ytIconUrl = "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg";
+
+  // SVG TERMINAL ICON (NEVER BREAKS)
+  const TerminalSVG = ({ className, style }) => (
+    <svg viewBox="0 0 48 48" className={className} style={style}>
+      <rect x="4" y="8" width="40" height="32" rx="6" fill="#300A24"/>
+      <path d="M12 16L20 24L12 32" stroke="#fff" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M24 32H36" stroke="#fff" strokeWidth="3" strokeLinecap="round"/>
+    </svg>
+  );
 
   const apps = [
     { id: 'browser', icon: <img src="https://upload.wikimedia.org/wikipedia/commons/a/a0/Firefox_logo%2C_2019.svg" alt="Firefox" className="dock-icon-img" />, name: 'Firefox' },
     { id: 'projects', icon: '📁', name: 'Files' },
-    { id: 'terminal', icon: <img src={terminalIconUrl} alt="Terminal" className="dock-icon-img" />, name: 'Terminal' },
+    { id: 'terminal', icon: <TerminalSVG className="dock-icon-img" style={{width: '75%', height: '75%'}} />, name: 'Terminal' },
     { id: 'vscode', icon: <img src={vscodeIconUrl} alt="VS" className="dock-icon-img" />, name: 'VS Code' },
     { id: 'sysmon', icon: '📊', name: 'Sys Monitor' },
     { id: 'experience', icon: '💼', name: 'Experience' }, 
-    { id: 'spotify', icon: <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" alt="Spotify" className="dock-icon-img" />, name: 'Spotify' },
+    { id: 'music', icon: <img src={ytIconUrl} alt="Music" className="dock-icon-img" />, name: 'Music' },
     { id: 'playzone', icon: '🎮', name: 'Arcade' }
   ];
 
-  // --- OS CONTROLS ---
   const handleLogin = (e) => { 
     e.preventDefault(); 
     setIsLocked(false); 
@@ -198,7 +214,6 @@ function App() {
     }
   };
 
-  // --- APP CONTENTS ---
   const renderContent = (appId) => {
     switch (appId) {
       case 'terminal':
@@ -352,19 +367,17 @@ function App() {
             <p style={{ color: '#888', fontSize: '0.85rem', marginTop: '30px', textAlign: 'center' }}>Daemon running optimally. All systems go for Manav's deployment.</p>
           </div>
         );
-      case 'spotify':
+      case 'music':
         return (
-          <div className="app-content" style={{ backgroundColor: '#000', height: '100%' }}>
-            {/* 🔥 FIXED: SATINDER SARTAAJ REAL PLAYLIST */}
+          <div className="app-content" style={{ backgroundColor: '#000', height: '100%', padding: '10px' }}>
             <iframe 
-              style={{ borderRadius: '0', border: 'none' }} 
-              src="https://open.spotify.com/embed/playlist/37i9dQZF1DZ06evO2YcMmc?utm_source=generator&theme=0" 
+              style={{ borderRadius: '12px', border: 'none' }} 
+              src="https://www.youtube.com/embed/G855146ZO18" 
               width="100%" 
               height="100%" 
               allowFullScreen="" 
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-              loading="lazy" 
-              title="Spotify Player"
+              allow="autoplay; encrypted-media; picture-in-picture" 
+              title="YouTube Music Player"
             ></iframe>
           </div>
         );
@@ -372,8 +385,6 @@ function App() {
       default: return null;
     }
   };
-
-  // --- RENDERING VIEWS ---
 
   if (isBooting) {
     return (
@@ -428,7 +439,7 @@ function App() {
               <span className="d-name">Resume</span>
             </div>
             <div className="desktop-file" onDoubleClick={() => toggleApp('terminal')}>
-              <img src={terminalIconUrl} alt="Terminal" className="desktop-icon-img" />
+              <TerminalSVG className="desktop-icon-img" style={{width: '3.2rem', height:'3.2rem', marginBottom: '5px', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))'}} />
               <span className="d-name">Terminal</span>
             </div>
             <div className="desktop-file" onDoubleClick={() => toggleApp('vscode')}>
