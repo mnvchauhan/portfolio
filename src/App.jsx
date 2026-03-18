@@ -23,14 +23,11 @@ function App() {
   ]);
   const terminalEndRef = useRef(null);
 
-  // --- 🔊 AUTHENTIC UBUNTU SOUNDS ---
+  // --- 🔊 AUTHENTIC SOUNDS ---
   const playSound = useCallback((type) => {
     const soundUrls = {
-      // Classic Ubuntu Desktop Login Drum Sound
       startup: 'https://upload.wikimedia.org/wikipedia/commons/2/23/Ubuntu_Startup.ogg',
-      // Subtle pop for window open
       open: 'https://upload.wikimedia.org/wikipedia/commons/8/8e/Pop.ogg', 
-      // Light click for window close
       close: 'https://upload.wikimedia.org/wikipedia/commons/3/3d/Click_01.ogg'
     };
     if(soundUrls[type]) {
@@ -47,24 +44,18 @@ function App() {
       "Mounting root file system...",
       "Starting Dev_Environment.service [ OK ]",
       "Loading UI modules...",
-      "Initializing Manav_Portfolio daemon...",
+      "Initializing System Monitor daemon...",
       "Welcome to Ubuntu."
     ];
-    
     let i = 0;
     const interval = setInterval(() => {
-      if (i < bootSequence.length) {
-        setBootText(prev => [...prev, bootSequence[i]]);
-        i++;
-      } else {
-        clearInterval(interval);
-        setTimeout(() => setIsBooting(false), 800);
-      }
+      if (i < bootSequence.length) { setBootText(prev => [...prev, bootSequence[i]]); i++; } 
+      else { clearInterval(interval); setTimeout(() => setIsBooting(false), 800); }
     }, 400); 
     return () => clearInterval(interval);
   }, []);
 
-  // --- 🚀 REAL CODE EXECUTION LOGIC (PISTON API) ---
+  // --- 🚀 REAL CODE EXECUTION LOGIC ---
   const initialCodes = {
     javascript: '// Welcome to Manav\'s JS Playground!\n\nconst greet = (name) => {\n  return `Hello ${name}, hire me!`;\n};\n\nconsole.log(greet("Recruiter"));',
     python: '# Welcome to Python Playground!\n\ndef factorial(n):\n    if n == 0: return 1\n    return n * factorial(n - 1)\n\nprint("Factorial of 5:", factorial(5))\nprint("Hire Manav Chauhan!")',
@@ -74,7 +65,7 @@ function App() {
   const [selectedLanguage, setSelectedLanguage] = useState('javascript');
   const [editorCode, setEditorCode] = useState(initialCodes.javascript);
   const [editorOutput, setEditorOutput] = useState([]);
-  const [isExecuting, setIsExecuting] = useState(false); // To show loading state
+  const [isExecuting, setIsExecuting] = useState(false); 
 
   const handleLanguageChange = (e) => {
     const lang = e.target.value;
@@ -83,76 +74,71 @@ function App() {
     setEditorOutput([]); 
   };
 
-  // 🔥 THE MAGIC FUNCTION: Runs code on a real backend API!
- // 🔥 THE BULLETPROOF RUN CODE FUNCTION
   const runCode = async () => {
     setIsExecuting(true);
     setEditorOutput(['manav@ubuntu:~$ Executing code... Please wait...', '']);
     
-    // 1. JAVASCRIPT: Hamesha browser mein local chalega (Fastest)
     if (selectedLanguage === 'javascript') {
       let logs = [];
       const originalLog = console.log;
-      console.log = (...args) => {
-        logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' '));
-      };
+      console.log = (...args) => { logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')); };
       try {
         // eslint-disable-next-line no-eval
         eval(editorCode);
         setEditorOutput(['[Execution Successful] ✅', '', ...logs]);
-      } catch (err) { 
-        setEditorOutput([`Error: ${err.message}`]);
-      }
+      } catch (err) { setEditorOutput([`Error: ${err.message}`]); }
       console.log = originalLog; 
       setIsExecuting(false);
       return;
     }
-
-    // 2. PYTHON & C++: Piston API call karega (Version '*' automatically latest uthayega)
-    const langMap = {
-      'python': { language: 'python', version: '*' },
-      'cpp': { language: 'cpp', version: '*' }
-    };
 
     try {
       const response = await fetch('https://emacs.piston.rs/api/v2/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          language: langMap[selectedLanguage].language,
-          version: langMap[selectedLanguage].version,
+          language: selectedLanguage === 'cpp' ? 'cpp' : 'python',
+          version: '*', 
           files: [{ content: editorCode }]
         })
       });
-      
       const result = await response.json();
-      
       if (result.run && result.run.output) {
-        // Asli code chal gaya!
-        const outputLines = result.run.output.split('\n');
-        setEditorOutput(['[Execution Successful] ✅', '', ...outputLines]);
-      } else if (result.message) {
-        throw new Error(result.message); // Error ko catch block mein bhej do
-      } else {
-        setEditorOutput(['Execution finished with no output.']);
-      }
+        setEditorOutput(['[Execution Successful] ✅', '', ...result.run.output.split('\n')]);
+      } else { throw new Error(result.message || 'Compiler Error'); }
     } catch (err) {
-      // 3. THE SMART FALLBACK: Agar API server down hua toh portfolio kharab nahi lagega!
       setEditorOutput([
-        `manav@ubuntu:~$ [Network Alert] Public Compiler API is currently busy or blocked.`,
-        `Switching to Portfolio Simulation Mode...`,
+        `[Network Alert] Compiler API is currently busy.`,
+        `Switching to Local Simulation Mode...`,
         ``,
         `[Execution Successful] ✅`,
-        selectedLanguage === 'python' 
-          ? `Factorial of 5: 120\nHire Manav Chauhan!` 
-          : `Compile-time safety and hireable skills!\nRecruiter, call Manav Chauhan!`
+        selectedLanguage === 'python' ? `Factorial of 5: 120\nHire Manav Chauhan!` : `Compile-time safety and hireable skills!`
       ]);
     }
     setIsExecuting(false);
   };
 
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setTime(now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }));
+      setDate(now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }));
+    };
+    updateTime();
+    setInterval(updateTime, 1000);
+  }, []);
+
+  useEffect(() => {
+    if (terminalEndRef.current) terminalEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [termHistory]);
+
+  // --- 📱 ALL APPS (Fully Loaded Dock) ---
   const apps = [
-    { id: 'browser', icon: '🌐', name: 'Firefox' },
+    { 
+      id: 'browser', 
+      icon: <img src="https://upload.wikimedia.org/wikipedia/commons/a/a0/Firefox_logo%2C_2019.svg" alt="Firefox" className="dock-icon-img" />, 
+      name: 'Firefox' 
+    },
     { id: 'projects', icon: '📁', name: 'Files' },
     { id: 'terminal', icon: '💻', name: 'Terminal' },
     { 
@@ -160,7 +146,13 @@ function App() {
       icon: <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg" alt="VS" className="dock-icon-img" />, 
       name: 'VS Code' 
     },
+    { id: 'sysmon', icon: '📊', name: 'Sys Monitor' },
     { id: 'experience', icon: '💼', name: 'Experience' }, 
+    { 
+      id: 'spotify', 
+      icon: <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" alt="Spotify" className="dock-icon-img" />, 
+      name: 'Spotify' 
+    },
     { id: 'playzone', icon: '🎮', name: 'Arcade' }
   ];
 
@@ -168,7 +160,7 @@ function App() {
     e.preventDefault(); 
     setIsLocked(false); 
     playSound('startup'); 
-    setTimeout(() => toggleApp('terminal'), 1200); // Opens terminal after boot sound
+    setTimeout(() => toggleApp('terminal'), 1200); 
   };
 
   const handleDragStart = (e, id) => {
@@ -196,15 +188,15 @@ function App() {
       setOpenWindows(openWindows.map(w => w.id === appId ? { ...w, minimized: false, zIndex: highestZIndex + 1 } : w));
     } else {
       playSound('open'); 
-      const offset = openWindows.length * 25; 
+      const offset = openWindows.length * 20; 
       const isMobile = window.innerWidth <= 768;
       setOpenWindows([...openWindows, { 
         id: appId, minimized: false, maximized: isMobile, 
         zIndex: highestZIndex + 1, 
-        x: isMobile ? 0 : 100 + offset, 
-        y: isMobile ? 0 : 50 + offset, 
-        w: isMobile ? '100%' : 800, 
-        h: isMobile ? '100%' : 500 
+        x: isMobile ? 0 : 80 + offset, 
+        y: isMobile ? 0 : 40 + offset, 
+        w: isMobile ? '100%' : 750, 
+        h: isMobile ? '100%' : 480 
       }]);
     }
     setHighestZIndex(highestZIndex + 1);
@@ -228,7 +220,7 @@ function App() {
 
       if (cmd === 'help') newHistory.push({ type: 'output', text: 'Commands: whoami, skills, experience, contact, clear' });
       else if (cmd === 'whoami') newHistory.push({ type: 'output', text: 'Manav Chauhan. Developer & DevOps Engineer.' });
-      else if (cmd === 'skills') newHistory.push({ type: 'output', text: 'Python, Django, Flask, MySQL, Docker, AWS, React' });
+      else if (cmd === 'skills') newHistory.push({ type: 'output', text: 'Python, Django, Flask, MySQL, Docker, React' });
       else if (cmd === 'experience') newHistory.push({ type: 'output', text: 'Backend Dev (2024-Pres) | DevOps Engineer (2022-2024)' });
       else if (cmd === 'contact') newHistory.push({ type: 'output', text: 'Email: manavchauhan616@Gmail.com | Insta: @mnvchauhan' });
       else if (cmd === 'clear') { setTermHistory([]); setTermInput(''); return; }
@@ -263,7 +255,9 @@ function App() {
               <input type="text" className="url-bar" value="https://google.com/search?q=manav+chauhan" readOnly />
             </div>
             <div className="browser-body">
-              <h1 style={{color: '#E95420', fontSize: '2.5rem', textAlign: 'center', marginTop: '40px'}}>Google</h1>
+              <div style={{textAlign: 'center', marginTop: '40px'}}>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google" style={{width: '200px', margin: '0 auto'}}/>
+              </div>
               <div className="search-box">Manav Chauhan Software Engineer</div>
               <div className="search-results">
                 <h3><a href="https://github.com/mnvchauhan" target="_blank" rel="noreferrer">GitHub - mnvchauhan</a></h3>
@@ -286,6 +280,12 @@ function App() {
                 <p className="exp-duration">2024 - Present | Remote</p>
                 <p className="exp-desc">Leading backend development, designing RESTful APIs, and optimizing database queries.</p>
               </div>
+              <div className="exp-timeline-item">
+                <div className="exp-dot"></div>
+                <h3>DevOps & Infrastructure Engineer</h3>
+                <p className="exp-duration">2022 - 2024 | Tech Corp</p>
+                <p className="exp-desc">Containerized legacy applications using Docker. Set up CI/CD pipelines using Git/GitHub Actions.</p>
+              </div>
             </div>
           </div>
         );
@@ -293,13 +293,21 @@ function App() {
         return (
           <div className="app-content nautilus-app">
             <div className="nautilus-sidebar">
-              <ul><li className="active">🏠 Home</li><li>📄 Documents</li><li>⬇️ Downloads</li></ul>
+              <ul>
+                <li className="active">🏠 Home</li>
+                <li>📄 Documents</li>
+                <li>⬇️ Downloads</li>
+                <li>🌐 Network</li>
+              </ul>
             </div>
             <div className="nautilus-main">
-              <h2>Home</h2>
+              <h2>Home / Developer</h2>
               <div className="ubuntu-grid">
                 <div className="ubuntu-file" onClick={() => window.open('https://github.com/mnvchauhan/makemypdfs', '_blank')}><span className="file-icon">📁</span><p>MakeMyPDFs</p></div>
                 <div className="ubuntu-file"><span className="file-icon">📁</span><p>E_Learning</p></div>
+                <div className="ubuntu-file"><span className="file-icon">🐳</span><p>docker-compose</p></div>
+                <div className="ubuntu-file"><span className="file-icon">☁️</span><p>aws_deploy.sh</p></div>
+                <div className="ubuntu-file"><span className="file-icon">🐍</span><p>flask_api.py</p></div>
                 <div className="ubuntu-file"><span className="file-icon">📄</span><p>QR_Gen.py</p></div>
               </div>
             </div>
@@ -356,7 +364,7 @@ function App() {
                   <div className="output-content" style={{ padding: '10px 15px', fontFamily: 'Ubuntu Mono, monospace', overflowY: 'auto', color: '#d3d7cf' }}>
                     {editorOutput.length === 0 ? <span style={{color: '#666'}}>// Select lang, write code, click 'Run Code' to see output...</span> : null}
                     {editorOutput.map((log, i) => (
-                      <div key={i} style={{ marginBottom: '5px', color: log.includes('Error') ? '#FF5F56' : log.includes('Execution Successful') ? '#8ae234' : '#d3d7cf', whiteSpace: 'pre-wrap' }}>
+                      <div key={i} style={{ marginBottom: '5px', color: log.includes('Error') || log.includes('Network Alert') ? '#FF5F56' : log.includes('Execution Successful') ? '#8ae234' : '#d3d7cf', whiteSpace: 'pre-wrap' }}>
                         {log}
                       </div>
                     ))}
@@ -366,12 +374,62 @@ function App() {
             </div>
           </div>
         );
+      // NEW APP: SYSTEM MONITOR
+      case 'sysmon':
+        return (
+          <div className="app-content" style={{ backgroundColor: '#1e1e1e', padding: '20px', color: '#fff' }}>
+            <h2 style={{ borderBottom: '1px solid #333', paddingBottom: '10px', marginBottom: '20px' }}>System Monitor</h2>
+            
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <span>CPU History</span><span>32%</span>
+              </div>
+              <div style={{ width: '100%', backgroundColor: '#333', height: '20px', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ width: '32%', backgroundColor: '#E95420', height: '100%' }}></div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <span>Memory and Swap History</span><span>4.2 GiB (26%) of 15.6 GiB</span>
+              </div>
+              <div style={{ width: '100%', backgroundColor: '#333', height: '20px', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ width: '26%', backgroundColor: '#8ae234', height: '100%' }}></div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <span>Network History</span><span>Receiving: 1.2 MB/s | Sending: 45 KB/s</span>
+              </div>
+              <div style={{ width: '100%', backgroundColor: '#333', height: '20px', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ width: '60%', backgroundColor: '#729fcf', height: '100%' }}></div>
+              </div>
+            </div>
+            
+            <p style={{ color: '#888', fontSize: '0.85rem', marginTop: '30px', textAlign: 'center' }}>Daemon running optimally. All systems go for Manav's deployment.</p>
+          </div>
+        );
+      // NEW APP: SPOTIFY
+      case 'spotify':
+        return (
+          <div className="app-content" style={{ backgroundColor: '#000', height: '100%' }}>
+            <iframe 
+              style={{ borderRadius: '0', border: 'none' }} 
+              src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0" 
+              width="100%" 
+              height="100%" 
+              allowFullScreen="" 
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+              loading="lazy"
+              title="Spotify Player"
+            ></iframe>
+          </div>
+        );
       case 'playzone': return <div className="app-content playzone-app"><Playzone theme="dark" /></div>;
       default: return null;
     }
   };
-
-  // --- RENDERING VIEWS ---
 
   if (isBooting) {
     return (
@@ -395,10 +453,9 @@ function App() {
           <div className="user-avatar"><span>M</span></div>
           <h2 className="user-name">Manav Chauhan</h2>
           <form onSubmit={handleLogin} className="login-form">
-            <input type="password" placeholder="Password" autoFocus />
+            <input type="password" placeholder="Password (Press Enter)" autoFocus />
             <button type="submit">→</button>
           </form>
-          <p style={{marginTop: '15px', color: '#ccc', fontSize: '0.85rem'}}>Press Enter to unlock</p>
         </div>
       </div>
     );
@@ -416,17 +473,6 @@ function App() {
       </div>
 
       <div className="desktop-wrapper">
-        <div className="left-dock">
-          {apps.map(app => {
-            const isOpen = openWindows.some(w => w.id === app.id && !w.minimized);
-            return (
-              <button key={app.id} className={`dock-icon ${isOpen ? 'active' : ''}`} onClick={() => toggleApp(app.id)} title={app.name}>
-                {app.icon}
-              </button>
-            );
-          })}
-        </div>
-
         <div className="main-screen-area">
           <div className="desktop-files-grid">
             <div className="desktop-file" onDoubleClick={() => toggleApp('projects')}>
@@ -439,7 +485,11 @@ function App() {
             </div>
             <div className="desktop-file" onDoubleClick={() => toggleApp('vscode')}>
               <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg" alt="VS" className="desktop-icon-img" />
-              <span className="d-name">Code Editor</span>
+              <span className="d-name">Editor</span>
+            </div>
+            <div className="desktop-file" onDoubleClick={() => {}}>
+              <span className="d-icon">🗑️</span>
+              <span className="d-name">Trash</span>
             </div>
           </div>
 
@@ -453,14 +503,11 @@ function App() {
                 className={`ubuntu-window ${draggingId === win.id ? 'dragging' : 'animated-open'} ${win.maximized ? 'maximized' : ''}`} 
                 onMouseDown={() => bringToFront(win.id)}
                 style={{ 
-                  top: win.maximized ? '0px' : `${win.y}px`, 
-                  left: win.maximized ? '0px' : `${win.x}px`, 
-                  width: win.maximized ? '100%' : `${win.w}px`,
-                  height: win.maximized ? '100%' : `${win.h}px`,
+                  top: win.maximized ? '0px' : `${win.y}px`, left: win.maximized ? '0px' : `${win.x}px`, 
+                  width: win.maximized ? '100%' : `${win.w}px`, height: win.maximized ? '100%' : `${win.h}px`,
                   zIndex: win.zIndex,
                   transform: win.minimized ? 'scale(0.8) translateY(200px)' : 'scale(1) translateY(0)',
-                  opacity: win.minimized ? 0 : 1,
-                  visibility: win.minimized ? 'hidden' : 'visible',
+                  opacity: win.minimized ? 0 : 1, visibility: win.minimized ? 'hidden' : 'visible',
                   pointerEvents: win.minimized ? 'none' : 'auto'
                 }}
               >
@@ -477,6 +524,18 @@ function App() {
             );
           })}
         </div>
+        
+        <div className="bottom-dock">
+          {apps.map(app => {
+            const isOpen = openWindows.some(w => w.id === app.id && !w.minimized);
+            return (
+              <button key={app.id} className={`dock-icon ${isOpen ? 'active' : ''}`} onClick={() => toggleApp(app.id)} title={app.name}>
+                {app.icon}
+              </button>
+            );
+          })}
+        </div>
+
       </div>
     </div>
   );
