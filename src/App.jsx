@@ -286,7 +286,7 @@ function App() {
             <div className="nautilus-main">
               <h2>Home / Developer</h2>
               <div className="ubuntu-grid">
-                <div className="ubuntu-file" onClick={() => window.open('https://https://mnvchauhan.pythonanywhere.com/', '_blank')}><span className="file-icon">📁</span><p>MakeMyPDFs</p></div>
+                <div className="ubuntu-file" onClick={() => window.open('https://https://mnvchauhan.pythonanywhere.com', '_blank')}><span className="file-icon">📁</span><p>MakeMyPDFs</p></div>
                 <div className="ubuntu-file"><span className="file-icon">📁</span><p>E_Learning</p></div>
                 <div className="ubuntu-file"><span className="file-icon">🐳</span><p>docker-compose</p></div>
                 <div className="ubuntu-file"><span className="file-icon">☁️</span><p>aws_deploy.sh</p></div>
