@@ -7,7 +7,6 @@ function App() {
   const [isBooting, setIsBooting] = useState(true);
   const [bootText, setBootText] = useState([]);
   const [isLocked, setIsLocked] = useState(true);
-  
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
   
@@ -23,7 +22,7 @@ function App() {
   ]);
   const terminalEndRef = useRef(null);
 
-  // --- 🔊 AUTHENTIC SOUNDS ---
+  // --- 🔊 SOUND EFFECTS ---
   const playSound = useCallback((type) => {
     const soundUrls = {
       startup: 'https://upload.wikimedia.org/wikipedia/commons/2/23/Ubuntu_Startup.ogg',
@@ -33,7 +32,7 @@ function App() {
     if(soundUrls[type]) {
       const audio = new Audio(soundUrls[type]);
       audio.volume = type === 'startup' ? 0.7 : 0.5;
-      audio.play().catch(e => console.log("Audio play prevented by browser"));
+      audio.play().catch(e => console.log("Audio play prevented"));
     }
   }, []);
 
@@ -55,64 +54,40 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // --- 🚀 REAL CODE EXECUTION LOGIC ---
-  const initialCodes = {
-    javascript: '// Welcome to Manav\'s JS Playground!\n\nconst greet = (name) => {\n  return `Hello ${name}, hire me!`;\n};\n\nconsole.log(greet("Recruiter"));',
-    python: '# Welcome to Python Playground!\n\ndef factorial(n):\n    if n == 0: return 1\n    return n * factorial(n - 1)\n\nprint("Factorial of 5:", factorial(5))\nprint("Hire Manav Chauhan!")',
-    cpp: '// Welcome to C++ Playground!\n#include <iostream>\n\nint main() {\n    std::cout << "Compile-time safety and hireable skills!" << std::endl;\n    return 0;\n}'
-  };
-
-  const [selectedLanguage, setSelectedLanguage] = useState('javascript');
-  const [editorCode, setEditorCode] = useState(initialCodes.javascript);
+  // --- 🚀 REAL PYTHON CODE EXECUTION (FIXED) ---
+  const defaultPythonCode = '# Welcome to Python Playground!\n\ndef calc_sum(a, b):\n    return a + b\n\nprint("Sum is:", calc_sum(10, 20))\nprint("Hire Manav Chauhan!")';
+  const [editorCode, setEditorCode] = useState(defaultPythonCode);
   const [editorOutput, setEditorOutput] = useState([]);
   const [isExecuting, setIsExecuting] = useState(false); 
 
-  const handleLanguageChange = (e) => {
-    const lang = e.target.value;
-    setSelectedLanguage(lang);
-    setEditorCode(initialCodes[lang]);
-    setEditorOutput([]); 
-  };
-
   const runCode = async () => {
     setIsExecuting(true);
-    setEditorOutput(['manav@ubuntu:~$ Executing code... Please wait...', '']);
+    setEditorOutput(['manav@ubuntu:~$ Executing Python code... Please wait...', '']);
     
-    if (selectedLanguage === 'javascript') {
-      let logs = [];
-      const originalLog = console.log;
-      console.log = (...args) => { logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ')); };
-      try {
-        // eslint-disable-next-line no-eval
-        eval(editorCode);
-        setEditorOutput(['[Execution Successful] ✅', '', ...logs]);
-      } catch (err) { setEditorOutput([`Error: ${err.message}`]); }
-      console.log = originalLog; 
-      setIsExecuting(false);
-      return;
-    }
-
     try {
+      // Piston API for real execution (Version fixed to 3.10.0 to prevent errors)
       const response = await fetch('https://emacs.piston.rs/api/v2/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          language: selectedLanguage === 'cpp' ? 'cpp' : 'python',
-          version: '*', 
-          files: [{ content: editorCode }]
+          language: 'python',
+          version: '3.10.0', 
+          files: [{ name: "main.py", content: editorCode }]
         })
       });
+      
       const result = await response.json();
-      if (result.run && result.run.output) {
+      
+      if (result.run && result.run.output !== undefined) {
         setEditorOutput(['[Execution Successful] ✅', '', ...result.run.output.split('\n')]);
-      } else { throw new Error(result.message || 'Compiler Error'); }
+      } else { 
+        throw new Error(result.message || 'Compiler Server Error'); 
+      }
     } catch (err) {
       setEditorOutput([
-        `[Network Alert] Compiler API is currently busy.`,
-        `Switching to Local Simulation Mode...`,
-        ``,
-        `[Execution Successful] ✅`,
-        selectedLanguage === 'python' ? `Factorial of 5: 120\nHire Manav Chauhan!` : `Compile-time safety and hireable skills!`
+        `[Network Error] Execution server is unreachable.`,
+        `Error Details: ${err.message}`,
+        `Make sure you are connected to the internet.`
       ]);
     }
     setIsExecuting(false);
@@ -132,30 +107,22 @@ function App() {
     if (terminalEndRef.current) terminalEndRef.current.scrollIntoView({ behavior: 'smooth' });
   }, [termHistory]);
 
-  // --- 📱 ALL APPS (Fully Loaded Dock) ---
+  // --- 📱 FULLY LOADED APPS (FIXED TERMINAL LOGO) ---
+  const terminalIconUrl = "https://img.icons8.com/color/512/console.png"; 
+  const vscodeIconUrl = "https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg";
+
   const apps = [
-    { 
-      id: 'browser', 
-      icon: <img src="https://upload.wikimedia.org/wikipedia/commons/a/a0/Firefox_logo%2C_2019.svg" alt="Firefox" className="dock-icon-img" />, 
-      name: 'Firefox' 
-    },
+    { id: 'browser', icon: <img src="https://upload.wikimedia.org/wikipedia/commons/a/a0/Firefox_logo%2C_2019.svg" alt="Firefox" className="dock-icon-img" />, name: 'Firefox' },
     { id: 'projects', icon: '📁', name: 'Files' },
-    { id: 'terminal', icon: '💻', name: 'Terminal' },
-    { 
-      id: 'vscode', 
-      icon: <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg" alt="VS" className="dock-icon-img" />, 
-      name: 'VS Code' 
-    },
+    { id: 'terminal', icon: <img src={terminalIconUrl} alt="Terminal" className="dock-icon-img" />, name: 'Terminal' },
+    { id: 'vscode', icon: <img src={vscodeIconUrl} alt="VS" className="dock-icon-img" />, name: 'VS Code' },
     { id: 'sysmon', icon: '📊', name: 'Sys Monitor' },
     { id: 'experience', icon: '💼', name: 'Experience' }, 
-    { 
-      id: 'spotify', 
-      icon: <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" alt="Spotify" className="dock-icon-img" />, 
-      name: 'Spotify' 
-    },
+    { id: 'spotify', icon: <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" alt="Spotify" className="dock-icon-img" />, name: 'Spotify' },
     { id: 'playzone', icon: '🎮', name: 'Arcade' }
   ];
 
+  // --- OS CONTROLS ---
   const handleLogin = (e) => { 
     e.preventDefault(); 
     setIsLocked(false); 
@@ -231,6 +198,7 @@ function App() {
     }
   };
 
+  // --- APP CONTENTS ---
   const renderContent = (appId) => {
     switch (appId) {
       case 'terminal':
@@ -320,28 +288,19 @@ function App() {
               <p>EXPLORER</p>
               <ul>
                 <li className="active-file" style={{color: '#E95420', display: 'flex', alignItems: 'center', gap: '5px'}}>
-                  <span style={{color: '#E95420', fontSize: '1rem'}}>📄</span>
-                  {selectedLanguage}.manav
+                  <span style={{fontSize: '1.2rem'}}>🐍</span>
+                  main.py
                 </li>
               </ul>
             </div>
             <div className="vscode-main">
               <div className="vscode-tabs" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#2d2d2d', borderBottom: '1px solid #111' }}>
                 <div style={{ display: 'flex' }}>
-                  <span className="active-tab">{selectedLanguage}.manav</span>
+                  <span className="active-tab">main.py</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', paddingRight: '10px' }}>
-                  <select 
-                    value={selectedLanguage} 
-                    onChange={handleLanguageChange}
-                    style={{ backgroundColor: '#1e1e1e', color: '#ccc', border: '1px solid #444', padding: '2px 5px', borderRadius: '4px', fontSize: '0.8rem', outline: 'none' }}
-                  >
-                    <option value="javascript">JavaScript</option>
-                    <option value="python">Python</option>
-                    <option value="cpp">C++</option>
-                  </select>
+                <div style={{ display: 'flex', alignItems: 'center', paddingRight: '10px' }}>
                   <button className="run-btn" onClick={runCode} disabled={isExecuting}>
-                    {isExecuting ? '⏳ Running...' : '▶ Run Code'}
+                    {isExecuting ? '⏳ Running...' : '▶ Run Python'}
                   </button>
                 </div>
               </div>
@@ -350,7 +309,7 @@ function App() {
                 <div style={{ flex: 2, overflow: 'hidden' }}>
                   <Editor
                     height="100%"
-                    language={selectedLanguage === 'cpp' ? 'cpp' : selectedLanguage}
+                    language="python"
                     theme="vs-dark"
                     value={editorCode}
                     onChange={(value) => setEditorCode(value || '')}
@@ -362,9 +321,9 @@ function App() {
                     TERMINAL OUTPUT
                   </div>
                   <div className="output-content" style={{ padding: '10px 15px', fontFamily: 'Ubuntu Mono, monospace', overflowY: 'auto', color: '#d3d7cf' }}>
-                    {editorOutput.length === 0 ? <span style={{color: '#666'}}>// Select lang, write code, click 'Run Code' to see output...</span> : null}
+                    {editorOutput.length === 0 ? <span style={{color: '#666'}}>// Write Python code and click 'Run Python' to see output...</span> : null}
                     {editorOutput.map((log, i) => (
-                      <div key={i} style={{ marginBottom: '5px', color: log.includes('Error') || log.includes('Network Alert') ? '#FF5F56' : log.includes('Execution Successful') ? '#8ae234' : '#d3d7cf', whiteSpace: 'pre-wrap' }}>
+                      <div key={i} style={{ marginBottom: '5px', color: log.includes('Error') ? '#FF5F56' : log.includes('Execution Successful') ? '#8ae234' : '#d3d7cf', whiteSpace: 'pre-wrap' }}>
                         {log}
                       </div>
                     ))}
@@ -374,54 +333,37 @@ function App() {
             </div>
           </div>
         );
-      // NEW APP: SYSTEM MONITOR
       case 'sysmon':
         return (
           <div className="app-content" style={{ backgroundColor: '#1e1e1e', padding: '20px', color: '#fff' }}>
             <h2 style={{ borderBottom: '1px solid #333', paddingBottom: '10px', marginBottom: '20px' }}>System Monitor</h2>
-            
             <div style={{ marginBottom: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                <span>CPU History</span><span>32%</span>
-              </div>
-              <div style={{ width: '100%', backgroundColor: '#333', height: '20px', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ width: '32%', backgroundColor: '#E95420', height: '100%' }}></div>
-              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}><span>CPU History</span><span>32%</span></div>
+              <div style={{ width: '100%', backgroundColor: '#333', height: '20px', borderRadius: '4px', overflow: 'hidden' }}><div style={{ width: '32%', backgroundColor: '#E95420', height: '100%' }}></div></div>
             </div>
-
             <div style={{ marginBottom: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                <span>Memory and Swap History</span><span>4.2 GiB (26%) of 15.6 GiB</span>
-              </div>
-              <div style={{ width: '100%', backgroundColor: '#333', height: '20px', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ width: '26%', backgroundColor: '#8ae234', height: '100%' }}></div>
-              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}><span>Memory and Swap History</span><span>4.2 GiB (26%) of 15.6 GiB</span></div>
+              <div style={{ width: '100%', backgroundColor: '#333', height: '20px', borderRadius: '4px', overflow: 'hidden' }}><div style={{ width: '26%', backgroundColor: '#8ae234', height: '100%' }}></div></div>
             </div>
-
             <div style={{ marginBottom: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                <span>Network History</span><span>Receiving: 1.2 MB/s | Sending: 45 KB/s</span>
-              </div>
-              <div style={{ width: '100%', backgroundColor: '#333', height: '20px', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ width: '60%', backgroundColor: '#729fcf', height: '100%' }}></div>
-              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}><span>Network History</span><span>Receiving: 1.2 MB/s | Sending: 45 KB/s</span></div>
+              <div style={{ width: '100%', backgroundColor: '#333', height: '20px', borderRadius: '4px', overflow: 'hidden' }}><div style={{ width: '60%', backgroundColor: '#729fcf', height: '100%' }}></div></div>
             </div>
-            
             <p style={{ color: '#888', fontSize: '0.85rem', marginTop: '30px', textAlign: 'center' }}>Daemon running optimally. All systems go for Manav's deployment.</p>
           </div>
         );
-      // NEW APP: SPOTIFY
       case 'spotify':
         return (
           <div className="app-content" style={{ backgroundColor: '#000', height: '100%' }}>
+            {/* 🔥 FIXED: SATINDER SARTAAJ REAL PLAYLIST */}
             <iframe 
               style={{ borderRadius: '0', border: 'none' }} 
-              src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0" 
+              src="https://open.spotify.com/embed/playlist/37i9dQZF1DZ06evO2YcMmc?utm_source=generator&theme=0" 
               width="100%" 
               height="100%" 
               allowFullScreen="" 
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-              loading="lazy"
+              loading="lazy" 
               title="Spotify Player"
             ></iframe>
           </div>
@@ -430,6 +372,8 @@ function App() {
       default: return null;
     }
   };
+
+  // --- RENDERING VIEWS ---
 
   if (isBooting) {
     return (
@@ -483,8 +427,12 @@ function App() {
               <span className="d-icon">💼</span>
               <span className="d-name">Resume</span>
             </div>
+            <div className="desktop-file" onDoubleClick={() => toggleApp('terminal')}>
+              <img src={terminalIconUrl} alt="Terminal" className="desktop-icon-img" />
+              <span className="d-name">Terminal</span>
+            </div>
             <div className="desktop-file" onDoubleClick={() => toggleApp('vscode')}>
-              <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg" alt="VS" className="desktop-icon-img" />
+              <img src={vscodeIconUrl} alt="VS" className="desktop-icon-img" />
               <span className="d-name">Editor</span>
             </div>
             <div className="desktop-file" onDoubleClick={() => {}}>
@@ -535,7 +483,6 @@ function App() {
             );
           })}
         </div>
-
       </div>
     </div>
   );
