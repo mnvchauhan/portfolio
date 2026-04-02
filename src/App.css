@@ -186,6 +186,26 @@ body {
 .login-form input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 1rem; }
 .login-form button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.2rem; }
 
+/* --- APP DRAWER (MOBILE) --- */
+.app-drawer-overlay {
+  position: absolute; top: 28px; left: 0; width: 100vw; height: calc(100vh - 28px);
+  background: rgba(30,30,30,0.85); backdrop-filter: blur(25px); z-index: 5000;
+  display: flex; justify-content: center; align-items: flex-start; padding-top: 50px;
+  animation: slideUp 0.3s cubic-bezier(0.2,0.8,0.2,1); overflow-y: auto;
+}
+@keyframes slideUp { 0% { transform: translateY(100%); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+.app-drawer-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); width: 90%; max-width: 800px; gap: 30px;
+}
+.app-drawer-item {
+  display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 10px; border-radius: 12px; transition: background 0.2s;
+}
+.app-drawer-item:active { background: rgba(255,255,255,0.2); transform: scale(0.95); }
+.drawer-icon { width: 64px; height: 64px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; color: white;}
+.drawer-icon img { width: 100%; height: 100%; object-fit: contain; }
+.drawer-icon svg { width: 100%; height: 100%; }
+.drawer-name { color: #fff; font-size: 0.9rem; text-align: center; }
+
 /* =========================================
    📱 MOBILE RESPONSIVENESS
 ========================================= */

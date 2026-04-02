@@ -20,6 +20,7 @@ function App() {
   const [bgImage, setBgImage] = useState('none');
   const [contextMenu, setContextMenu] = useState(null);
   const [showWallpaperMenu, setShowWallpaperMenu] = useState(false);
+  const [appDrawerOpen, setAppDrawerOpen] = useState(false);
 
   const UbuntuLogoSVG = ({size = 150}) => (
     <svg width={size} height={size} viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
@@ -192,6 +193,7 @@ function App() {
     { id: 'vscode', icon: <img src={vscodeIconUrl} alt="VS" className="dock-icon-img" />, name: 'VS Code' },
     { id: 'sysmon', icon: '📊', name: 'Sys Monitor' },
     { id: 'settings', icon: '⚙️', name: 'Settings' },
+    { id: 'chai', icon: '☕', name: 'Buy Chai' },
     { id: 'experience', icon: '💼', name: 'Experience' }, 
     { id: 'resume', icon: '📄', name: 'Resume' },
     { id: 'music', icon: <img src={ytIconUrl} alt="Music" className="dock-icon-img" />, name: 'Music' },
@@ -250,6 +252,10 @@ function App() {
   const toggleApp = (appId) => {
     if (appId === 'settings') {
       setShowWallpaperMenu(true);
+      return;
+    }
+    if (appId === 'chai') {
+      window.open('https://buymeachai.ezee.li/Mnvchauhan', '_blank');
       return;
     }
     const existing = openWindows.find(w => w.id === appId);
@@ -542,8 +548,8 @@ function App() {
     return (
       <div className="boot-screen" style={{display: 'flex', flexDirection: 'column', backgroundColor: '#000', color: '#fff', height: '100vh', padding: 0}}>
         <div style={{flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo-ubuntu_cof-orange-hex.svg" alt="Ubuntu" style={{width: '140px', marginBottom: '20px'}} />
-          <div style={{fontFamily: 'Ubuntu, sans-serif', fontSize: '3rem', fontWeight: 'bold', letterSpacing: '1px'}}>ubuntu</div>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo-ubuntu_cof-orange-hex.svg" alt="Ubuntu Logo" style={{width: '140px', marginBottom: '20px'}} />
+          <div style={{fontFamily: 'Ubuntu, sans-serif', fontSize: '3rem', fontWeight: 'bold', letterSpacing: '1px'}}>MNV ubuntu</div>
         </div>
         <div style={{paddingBottom: '10vh', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
           <div className="ubuntu-spinner" style={{width: '35px', height: '35px', borderWidth: '3px'}}></div>
@@ -576,7 +582,10 @@ function App() {
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: `rgba(0, 0, 0, ${(100 - brightness) / 100})`, pointerEvents: 'none', zIndex: 99999 }} />
       <div className="top-bar">
         <div className="top-left">Activities</div>
-        <div className="top-center">{date} {time}</div>
+        <div className="top-center" style={{display: 'flex', alignItems: 'center', gap: '15px'}}>
+          {date} {time}
+          <img src="https://api.visitorbadge.io/api/visitors?path=mnv.portfolio.v1&countColor=%23E95420" alt="visitors" style={{height: '20px'}} title="Live Visits" />
+        </div>
         <div className="top-right" onClick={() => { playSound('click'); setTrayOpen(!trayOpen); }}>
           <WifiSVG /><VolSVG /><BattSVG />
           {trayOpen && (
@@ -652,6 +661,10 @@ function App() {
               <span className="d-icon">⚙️</span>
               <span className="d-name">Settings</span>
             </div>
+            <div className="desktop-file" onDoubleClick={() => toggleApp('chai')}>
+              <span className="d-icon">☕</span>
+              <span className="d-name">Buy Chai</span>
+            </div>
             <div className="desktop-file" onDoubleClick={() => {}}>
               <span className="d-icon">🗑️</span>
               <span className="d-name">Trash</span>
@@ -698,7 +711,7 @@ function App() {
         </div>
         
         <div className="bottom-dock">
-          {apps.map(app => {
+          {apps.slice(0, window.innerWidth <= 768 ? 4 : apps.length).map(app => {
             const isOpen = openWindows.some(w => w.id === app.id && !w.minimized);
             return (
               <button key={app.id} className={`dock-icon ${isOpen ? 'active' : ''}`} onClick={() => toggleApp(app.id)} title={app.name}>
@@ -706,7 +719,29 @@ function App() {
               </button>
             );
           })}
+          {window.innerWidth <= 768 && (
+            <button className="dock-icon" onClick={() => setAppDrawerOpen(!appDrawerOpen)} title="Show Applications">
+              <svg viewBox="0 0 24 24" fill="#fff" width="24" height="24">
+                <circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/>
+                <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+                <circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/>
+              </svg>
+            </button>
+          )}
         </div>
+
+      {appDrawerOpen && (
+        <div className="app-drawer-overlay" onClick={() => setAppDrawerOpen(false)}>
+          <div className="app-drawer-grid">
+            {apps.map(app => (
+              <div key={app.id} className="app-drawer-item" onClick={(e) => { e.stopPropagation(); toggleApp(app.id); setAppDrawerOpen(false); }}>
+                <div className="drawer-icon">{typeof app.icon === 'string' ? <span style={{fontSize:'3rem'}}>{app.icon}</span> : app.icon}</div>
+                <div className="drawer-name">{app.name}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );
