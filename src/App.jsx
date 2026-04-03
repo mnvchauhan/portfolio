@@ -32,10 +32,10 @@ function App() {
 
   const wallpapers = [
     { id: 'wp0', url: 'none', thumb: '', name: 'Ubuntu Default Gradient' },
-    { id: 'wp1', url: '/wallpapers/ubuntu_1.jpg', thumb: '/wallpapers/ubuntu_1.jpg', name: 'Ubuntu Theme 1' },
-    { id: 'wp2', url: '/wallpapers/ubuntu_2.jpg', thumb: '/wallpapers/ubuntu_2.jpg', name: 'Ubuntu Theme 2' },
-    { id: 'wp3', url: '/wallpapers/ubuntu_3.jpg', thumb: '/wallpapers/ubuntu_3.jpg', name: 'Ubuntu Theme 3' },
-    { id: 'wp4', url: '/wallpapers/ubuntu_4.jpg', thumb: '/wallpapers/ubuntu_4.jpg', name: 'Ubuntu Theme 4' }
+    { id: 'wp1', url: '/ubuntu_1.jpg', thumb: '/ubuntu_1.jpg', name: 'Ubuntu Theme 1' },
+    { id: 'wp2', url: '/ubuntu_2.jpg', thumb: '/ubuntu_2.jpg', name: 'Ubuntu Theme 2' },
+    { id: 'wp3', url: '/ubuntu_3.jpg', thumb: '/ubuntu_3.jpg', name: 'Ubuntu Theme 3' },
+    { id: 'wp4', url: '/ubuntu_4.jpg', thumb: '/ubuntu_4.jpg', name: 'Ubuntu Theme 4' }
   ];
 
   const handleDesktopClick = () => {
