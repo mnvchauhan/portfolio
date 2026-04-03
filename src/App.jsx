@@ -549,7 +549,7 @@ function App() {
       <div className="boot-screen" style={{display: 'flex', flexDirection: 'column', backgroundColor: '#000', color: '#fff', height: '100vh', padding: 0}}>
         <div style={{flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
           <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo-ubuntu_cof-orange-hex.svg" alt="Ubuntu Logo" style={{width: '140px', marginBottom: '20px'}} />
-          <div style={{fontFamily: 'Ubuntu, sans-serif', fontSize: '3rem', fontWeight: 'bold', letterSpacing: '1px'}}>MNV ubuntu</div>
+          <div style={{fontFamily: 'Ubuntu, sans-serif', fontSize: '3rem', fontWeight: 'bold', letterSpacing: '1px'}}>mnv ubontu</div>
         </div>
         <div style={{paddingBottom: '10vh', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
           <div className="ubuntu-spinner" style={{width: '35px', height: '35px', borderWidth: '3px'}}></div>
