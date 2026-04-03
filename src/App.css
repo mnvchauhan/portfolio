@@ -10,19 +10,32 @@ body {
   height: 100vh;
 }
 
-.ubuntu-os { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+.ubuntu-os { display: flex; flex-direction: column; height: 100vh; width: 100vw; user-select: none; -webkit-user-select: none; }
 .ubuntu-os.is-dragging { user-select: none; }
 
 /* --- TOP BAR --- */
 .top-bar { background-color: rgba(0, 0, 0, 0.85); height: 28px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; font-size: 0.9rem; z-index: 100; font-weight: 500; }
 .top-bar.transparent { background-color: transparent; position: absolute; top: 0; width: 100%; z-index: 10;}
-.top-right { display: flex; gap: 15px; align-items: center;}
+
+.top-right { display: flex; gap: 8px; align-items: center; padding: 2px 8px; border-radius: 14px; cursor: pointer; transition: background 0.2s; position: relative;}
+.top-right:hover { background: rgba(255, 255, 255, 0.15); }
+.tray-icon { fill: white; width: 16px; height: 16px; display: inline-block; margin: 0 2px;}
+
+.quick-settings { position: absolute; top: 32px; right: 10px; width: 280px; background: rgba(36, 36, 36, 0.95); backdrop-filter: blur(20px); border-radius: 12px; border: 1px solid #444; padding: 15px; display: flex; flex-direction: column; gap: 15px; z-index: 9999; box-shadow: 0 10px 30px rgba(0,0,0,0.6); animation: fadeIn 0.15s ease-out; }
+.qs-header { font-weight: bold; font-size: 0.85rem; color: #bbb; margin-bottom: 5px; border-bottom: 1px solid #444; padding-bottom: 5px; }
+.qs-item { display: flex; align-items: center; gap: 12px; }
+.qs-slider { flex: 1; -webkit-appearance: none; appearance: none; background: #666; height: 4px; border-radius: 2px; outline: none; }
+.qs-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; background: #E95420; border-radius: 50%; cursor: pointer; transition: 0.1s; }
+.qs-slider::-webkit-slider-thumb:hover { transform: scale(1.1); }
+.qs-icon-btn { display: flex; justify-content: center; align-items: center; width: 36px; height: 36px; border-radius: 50%; background: #E95420; cursor: pointer; border: none; color: white; transition: 0.2s;}
+.qs-icon-btn.inactive { background: #444; }
+.qs-icon-btn:hover { filter: brightness(1.2); }
+.qs-row { display: flex; gap: 10px; align-items: center; }
 
 /* --- MAIN LAYOUT --- */
 .desktop-wrapper { display: flex; flex-direction: column; flex: 1; height: calc(100vh - 28px); position: relative; }
 .main-screen-area { flex: 1; position: relative; overflow: hidden; }
 
-/* --- BOTTOM DOCK (Mac/Ubuntu Dash style) --- */
 .bottom-dock { 
   position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); height: 70px;
   background-color: rgba(30, 30, 30, 0.6); backdrop-filter: blur(15px);
@@ -49,7 +62,20 @@ body {
   width: 20px; height: 4px; background-color: #E95420; border-radius: 2px; 
 }
 
-.dock-icon-img { width: 75%; height: 75%; object-fit: contain; transition: transform 0.2s ease; }
+.dock-icon-img { width: 75%; height: 75%; object-fit: contain; }
+
+.context-menu { position: absolute; background: #242424; border: 1px solid #444; border-radius: 6px; padding: 5px 0; z-index: 10000; box-shadow: 0 5px 15px rgba(0,0,0,0.6); }
+.cm-item { padding: 8px 20px; font-size: 0.9rem; color: #fff; cursor: pointer; transition: 0.2s; }
+.cm-item:hover { background: #E95420; }
+.wp-menu { position: absolute; top: 50vh; left: 50vw; transform: translate(-50%, -50%); width: 500px; background: #242424; border: 1px solid #444; border-radius: 12px; padding: 20px; z-index: 10000; box-shadow: 0 10px 40px rgba(0,0,0,0.8); max-height: 80vh; overflow-y: auto;}
+.wp-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between;}
+.wp-close { cursor: pointer; color: #aaa; } .wp-close:hover { color: #fff; }
+.wp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.wp-item { border-radius: 6px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: 0.2s; text-align: center; }
+.wp-item:hover { border-color: #E95420; }
+.wp-item.active { border-color: #27C93F; }
+.wp-img { width: 100%; height: 120px; object-fit: cover; background: #1e1e1e;}
+.wp-name { font-size: 0.8rem; padding: 5px 0; color: #ccc;}
 
 /* --- DESKTOP ICONS --- */
 .desktop-files-grid { position: absolute; top: 15px; left: 15px; display: flex; flex-direction: column; gap: 20px; z-index: 5; }
@@ -59,12 +85,10 @@ body {
 .d-name { font-size: 0.85rem; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.9); font-weight: 500; text-align: center; }
 .desktop-icon-img { width: 3.2rem; height: 3.2rem; object-fit: contain; margin-bottom: 5px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 
-/* --- BOOT SCREEN (Hacker Vibe) --- */
-.boot-screen { height: 100vh; width: 100vw; background-color: #000; color: #00ff00; font-family: 'Ubuntu Mono', 'Courier New', monospace; padding: 20px; display: flex; flex-direction: column; justify-content: flex-end; }
-.boot-text-container { margin-bottom: 20px; }
-.boot-text-container p { margin: 5px 0; font-size: 1.1rem; }
-.cursor-blink { display: inline-block; animation: blink 1s step-end infinite; font-size: 1.2rem; }
-@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+/* --- BOOT SCREEN (Ubuntu OEM style) --- */
+.boot-screen { height: 100vh; width: 100vw; background-color: #000; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.ubuntu-spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.2); border-top: 4px solid #E95420; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* --- WINDOW STYLES & ANIMATIONS --- */
 .ubuntu-window {
@@ -83,6 +107,12 @@ body {
 .close { background-color: #FF5F56; } .close:hover { background-color: #ff3b30; }
 .minimize { background-color: #FFBD2E; } .minimize:hover { background-color: #ffaa00; }
 .maximize { background-color: #27C93F; } .maximize:hover { background-color: #1fac33; }
+
+/* Resizing handles */
+.resize-handle { position: absolute; z-index: 100; }
+.resize-handle.se { bottom: 0; right: 0; width: 15px; height: 15px; cursor: se-resize; }
+.resize-handle.e { top: 0; right: 0; width: 8px; height: 100%; cursor: e-resize; }
+.resize-handle.s { bottom: 0; left: 0; width: 100%; height: 8px; cursor: s-resize; }
 
 /* --- APP SPECIFIC STYLES --- */
 .app-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; background-color: #242424;}
@@ -156,15 +186,36 @@ body {
 .login-form input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 1rem; }
 .login-form button { background: transparent; border: none; color: white; cursor: pointer; font-size: 1.2rem; }
 
+/* --- APP DRAWER (MOBILE) --- */
+.app-drawer-overlay {
+  position: absolute; top: 28px; left: 0; width: 100vw; height: calc(100vh - 28px);
+  background: rgba(30,30,30,0.85); backdrop-filter: blur(25px); z-index: 5000;
+  display: flex; justify-content: center; align-items: flex-start; padding-top: 50px;
+  animation: slideUp 0.3s cubic-bezier(0.2,0.8,0.2,1); overflow-y: auto;
+}
+@keyframes slideUp { 0% { transform: translateY(100%); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+.app-drawer-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); width: 90%; max-width: 800px; gap: 30px;
+}
+.app-drawer-item {
+  display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 10px; border-radius: 12px; transition: background 0.2s;
+}
+.app-drawer-item:active { background: rgba(255,255,255,0.2); transform: scale(0.95); }
+.drawer-icon { width: 64px; height: 64px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; color: white;}
+.drawer-icon img { width: 100%; height: 100%; object-fit: contain; }
+.drawer-icon svg { width: 100%; height: 100%; }
+.drawer-name { color: #fff; font-size: 0.9rem; text-align: center; }
+
 /* =========================================
    📱 MOBILE RESPONSIVENESS
 ========================================= */
 @media (max-width: 768px) {
-  .bottom-dock { width: 90%; height: 65px; gap: 10px; bottom: 5px;}
-  .dock-icon { width: 40px; height: 40px; font-size: 1.5rem; }
-  .dock-icon:hover { transform: scale(1.1); margin: 0; }
+  .bottom-dock { width: 95%; height: 60px; bottom: 5px; gap: 8px; padding: 0 10px; overflow-x: auto; flex-wrap: nowrap; justify-content: flex-start; }
+  .dock-icon { width: 42px; height: 42px; font-size: 1.5rem; flex-shrink: 0;}
+  .dock-icon:hover { transform: none; margin: 0; }
   .desktop-files-grid { display: none; } 
-  .ubuntu-window { top: 0 !important; left: 0 !important; width: 100% !important; height: calc(100% - 75px) !important; border-radius: 0; transform: none !important; }
+  .ubuntu-window { top: 0 !important; left: 0 !important; width: 100% !important; height: calc(100% - 65px) !important; border-radius: 0; transform: none !important; }
+  .resize-handle { display: none; }
   .window-header { cursor: default; }
   .nautilus-app, .vscode-app { flex-direction: column; }
   .nautilus-sidebar, .vscode-sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #111;}
