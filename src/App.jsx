@@ -32,10 +32,10 @@ function App() {
 
   const wallpapers = [
     { id: 'wp0', url: 'none', thumb: '', name: 'Ubuntu Default Gradient' },
-    { id: 'wp1', url: 'https://images.unsplash.com/photo-1614849286521-4c58b2f0ff15?auto=format&fit=crop&q=80', thumb: 'https://images.unsplash.com/photo-1614849286521-4c58b2f0ff15?auto=format&fit=crop&w=300&q=80', name: 'Jammy Jellyfish Style' },
-    { id: 'wp2', url: 'https://images.unsplash.com/photo-1549221175-19e48b8a51cc?auto=format&fit=crop&q=80', thumb: 'https://images.unsplash.com/photo-1549221175-19e48b8a51cc?auto=format&fit=crop&w=300&q=80', name: 'Focal Fossa Vibe' },
-    { id: 'wp3', url: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80', thumb: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&w=300&q=80', name: 'Abstract Purple' },
-    { id: 'wp4', url: 'https://images.unsplash.com/photo-1604147706283-d7119b5b822c?auto=format&fit=crop&q=80', thumb: 'https://images.unsplash.com/photo-1604147706283-d7119b5b822c?auto=format&fit=crop&w=300&q=80', name: 'Sunset Orange' }
+    { id: 'wp1', url: '/wallpapers/ubuntu_1.jpg', thumb: '/wallpapers/ubuntu_1.jpg', name: 'Ubuntu Theme 1' },
+    { id: 'wp2', url: '/wallpapers/ubuntu_2.jpg', thumb: '/wallpapers/ubuntu_2.jpg', name: 'Ubuntu Theme 2' },
+    { id: 'wp3', url: '/wallpapers/ubuntu_3.jpg', thumb: '/wallpapers/ubuntu_3.jpg', name: 'Ubuntu Theme 3' },
+    { id: 'wp4', url: '/wallpapers/ubuntu_4.jpg', thumb: '/wallpapers/ubuntu_4.jpg', name: 'Ubuntu Theme 4' }
   ];
 
   const handleDesktopClick = () => {
