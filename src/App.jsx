@@ -84,7 +84,7 @@ function App() {
     if(soundUrls[type]) {
       const audio = new Audio(soundUrls[type]);
       audio.volume = type === 'startup' ? 0.7 : 0.5;
-      audio.play().catch(e => console.log("Audio play prevented"));
+      audio.play().catch(() => console.log("Audio play prevented"));
     }
   }, []);
 
@@ -553,6 +553,7 @@ function App() {
         </div>
         <div style={{paddingBottom: '10vh', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
           <div className="ubuntu-spinner" style={{width: '35px', height: '35px', borderWidth: '3px'}}></div>
+          <div style={{marginTop: '20px', fontSize: '0.9rem', color: '#aaa', minHeight: '1.2rem'}}>{bootText[bootText.length - 1] || "..."}</div>
         </div>
       </div>
     );
