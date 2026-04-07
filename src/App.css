@@ -8,9 +8,10 @@ body {
   background: radial-gradient(circle at top left, #E95420, #772953 50%, #2c001e);
   color: #ffffff;
   height: 100vh;
+  height: 100dvh;
 }
 
-.ubuntu-os { display: flex; flex-direction: column; height: 100vh; width: 100vw; user-select: none; -webkit-user-select: none; }
+.ubuntu-os { display: flex; flex-direction: column; height: 100vh; height: 100dvh; width: 100vw; user-select: none; -webkit-user-select: none; }
 .ubuntu-os.is-dragging { user-select: none; }
 
 /* --- TOP BAR --- */
@@ -33,7 +34,7 @@ body {
 .qs-row { display: flex; gap: 10px; align-items: center; }
 
 /* --- MAIN LAYOUT --- */
-.desktop-wrapper { display: flex; flex-direction: column; flex: 1; height: calc(100vh - 28px); position: relative; }
+.desktop-wrapper { display: flex; flex-direction: column; flex: 1; height: calc(100vh - 28px); height: calc(100dvh - 28px); position: relative; }
 .main-screen-area { flex: 1; position: relative; overflow: hidden; }
 
 .bottom-dock { 
@@ -220,8 +221,8 @@ body {
   .wp-menu { width: 90vw; max-height: 70vh; }
   .wp-grid { grid-template-columns: 1fr; }
   
-  .bottom-dock { width: auto; max-width: 95%; height: 60px; bottom: 5px; gap: 12px; padding: 0 15px; overflow-x: auto; flex-wrap: nowrap; justify-content: center; }
-  .dock-icon { width: 42px; height: 42px; font-size: 1.5rem; flex-shrink: 0; margin: 0 2px;}
+  .bottom-dock { width: max-content; min-width: 250px; max-width: 95%; height: 65px; bottom: max(15px, env(safe-area-inset-bottom)); gap: 12px; padding: 0 15px; overflow-x: auto; flex-wrap: nowrap; justify-content: center; -webkit-overflow-scrolling: touch; }
+  .dock-icon { width: 45px; height: 45px; font-size: 1.5rem; flex-shrink: 0; margin: 0 2px;}
   .dock-icon:hover { transform: none; margin: 0 2px; }
   
   .desktop-files-grid { display: none; } 
