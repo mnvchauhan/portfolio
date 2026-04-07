@@ -22,6 +22,13 @@ function App() {
   const [contextMenu, setContextMenu] = useState(null);
   const [showWallpaperMenu, setShowWallpaperMenu] = useState(false);
   const [appDrawerOpen, setAppDrawerOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const UbuntuLogoSVG = ({size = 150}) => (
     <svg width={size} height={size} viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
@@ -757,7 +764,7 @@ hsssssNMMMNysssssssssssssssssssodMMNhsss   Terminal: JS-Term
         </div>
         
         <div className="bottom-dock">
-          {apps.slice(0, window.innerWidth <= 768 ? 4 : apps.length).map(app => {
+          {apps.slice(0, isMobile ? 4 : apps.length).map(app => {
             const isOpen = openWindows.some(w => w.id === app.id && !w.minimized);
             return (
               <button key={app.id} className={`dock-icon ${isOpen ? 'active' : ''}`} onClick={() => toggleApp(app.id)} title={app.name}>
@@ -765,7 +772,7 @@ hsssssNMMMNysssssssssssssssssssodMMNhsss   Terminal: JS-Term
               </button>
             );
           })}
-          {window.innerWidth <= 768 && (
+          {isMobile && (
             <button className="dock-icon" onClick={() => setAppDrawerOpen(!appDrawerOpen)} title="Show Applications">
               <svg viewBox="0 0 24 24" fill="#fff" width="24" height="24">
                 <circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/>

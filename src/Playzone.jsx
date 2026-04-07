@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const Playzone = () => {
+const Playzone = ({ theme }) => {
   const [activeView, setActiveView] = useState('menu'); 
 
   // --- SNAKE GAME STATE ---
