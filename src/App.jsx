@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Editor from '@monaco-editor/react';
 import Playzone from './Playzone';
+import CalculatorApp from './CalculatorApp';
 import './App.css';
 
 function App() {
@@ -32,10 +33,10 @@ function App() {
 
   const wallpapers = [
     { id: 'wp0', url: 'none', thumb: '', name: 'Ubuntu Default Gradient' },
-    { id: 'wp1', url: '/wallpapers/ubuntu_1.jpg', thumb: '/wallpapers/ubuntu_1.jpg', name: 'Ubuntu Theme 1' },
-    { id: 'wp2', url: '/wallpapers/ubuntu_2.jpg', thumb: '/wallpapers/ubuntu_2.jpg', name: 'Ubuntu Theme 2' },
-    { id: 'wp3', url: '/wallpapers/ubuntu_3.jpg', thumb: '/wallpapers/ubuntu_3.jpg', name: 'Ubuntu Theme 3' },
-    { id: 'wp4', url: '/wallpapers/ubuntu_4.jpg', thumb: '/wallpapers/ubuntu_4.jpg', name: 'Ubuntu Theme 4' }
+    { id: 'wp1', url: '/ubuntu_1.jpg', thumb: '/ubuntu_1.jpg', name: 'Ubuntu Theme 1' },
+    { id: 'wp2', url: '/ubuntu_2.jpg', thumb: '/ubuntu_2.jpg', name: 'Ubuntu Theme 2' },
+    { id: 'wp3', url: '/ubuntu_3.jpg', thumb: '/ubuntu_3.jpg', name: 'Ubuntu Theme 3' },
+    { id: 'wp4', url: '/ubuntu_4.jpg', thumb: '/ubuntu_4.jpg', name: 'Ubuntu Theme 4' }
   ];
 
   const handleDesktopClick = () => {
@@ -84,7 +85,7 @@ function App() {
     if(soundUrls[type]) {
       const audio = new Audio(soundUrls[type]);
       audio.volume = type === 'startup' ? 0.7 : 0.5;
-      audio.play().catch(e => console.log("Audio play prevented"));
+      audio.play().catch(() => console.log("Audio play prevented"));
     }
   }, []);
 
@@ -197,7 +198,8 @@ function App() {
     { id: 'experience', icon: '💼', name: 'Experience' }, 
     { id: 'resume', icon: '📄', name: 'Resume' },
     { id: 'music', icon: <img src={ytIconUrl} alt="Music" className="dock-icon-img" />, name: 'Music' },
-    { id: 'playzone', icon: '🎮', name: 'Arcade' }
+    { id: 'playzone', icon: '🎮', name: 'Arcade' },
+    { id: 'calculator', icon: '🧮', name: 'Calc' }
   ];
 
   const handleLogin = (e) => { 
@@ -314,14 +316,39 @@ function App() {
         return currentDir === '~' ? `~/${pathArg}` : `${currentDir}/${pathArg}`;
       };
 
-      if (cmd === 'help') newHistory.push({ type: 'output', text: 'Commands: ls, cd, pwd, cat, echo, clear, whoami, skills, experience, contact, sudo' });
+      if (cmd === 'help') newHistory.push({ type: 'output', text: 'Commands: ls, cd, pwd, cat, echo, clear, whoami, skills, experience, contact, sudo, neofetch, date, uptime, history' });
       else if (cmd === 'clear') { setTermHistory([]); setTermInput(''); return; }
       else if (cmd === 'whoami') newHistory.push({ type: 'output', text: 'manav' });
       else if (cmd === 'skills') newHistory.push({ type: 'output', text: 'Python, Django, Flask, MySQL, Docker, React' });
       else if (cmd === 'experience') newHistory.push({ type: 'output', text: 'Backend Dev (2024-Pres) | DevOps Engineer (2022-2024)' });
       else if (cmd === 'contact') newHistory.push({ type: 'output', text: 'Email: manavchauhan616@Gmail.com | Insta: @mnvchauhan' });
       else if (cmd === 'pwd') newHistory.push({ type: 'output', text: currentDir.replace('~', '/home/manav') });
-      else if (cmd === 'sudo') newHistory.push({ type: 'output', text: `[sudo] password for manav: \nmanav is not in the sudoers file. This incident will be reported.` });
+      else if (cmd === 'date') newHistory.push({ type: 'output', text: new Date().toString() });
+      else if (cmd === 'uptime') newHistory.push({ type: 'output', text: 'up 45 days, 12:34, 1 user, load average: 0.04, 0.01, 0.00' });
+      else if (cmd === 'history') newHistory.push({ type: 'output', text: termHistory.filter(h => h.type === 'input').map((h, i) => `  ${i+1}  ${h.text.replace(`manav@ubuntu:${currentDir}$ `, '')}`).join('\\n') });
+      else if (cmd === 'neofetch') newHistory.push({ type: 'output', text: `            .-/+oossssoo+/-.               manav@ubuntu
+        \`:+ssssssssssssssssss+:\`           ------------
+      -+ssssssssssssssssssyyssss+-         OS: Ubuntu 22.04.4 LTS (Portfolio Edition)
+    .ossssssssssssssssssdMMMNysssso.       Host: Web Environment
+   /ssssssssssshdmmNNmmyNMMMMhssssss/      Kernel: 5.15.0-101-generic
+  +ssssssssshmydMMMMMMMNddddyssssssss+     Uptime: 45 days, 12 hours
+ /sssssssshNMMMyhhyyyyhmNMMMNhssssssss/    Packages: 1337 (dpkg)
+.ssssssssdMMMNhsssssssssshNMMMdssssssss.   Shell: bash 5.1.16
++sssssssNMMMmsssssssssssssssyNNmyhyssss+   Resolution: ${window.innerWidth}x${window.innerHeight}
+hssssssNMMMNysssssssssssssssssodMMNhssss   DE: GNOME 42.9
+ssssssmMMMMhssssssssssssssssssssyNMMhsss   Theme: Yaru-dark [GTK3]
+ssssssNMMMNhsssssssssssssssssssssyNMhsss   Icons: Yaru
+hsssssNMMMNysssssssssssssssssssodMMNhsss   Terminal: JS-Term 
++ssssssNMMMNyssssssssssssssssyoNMMmysss+   CPU: Developer Brain
+.sssssssydNMMMNydyyyyyyhydNMMMNdsssssss.   Memory: Infinite
+ /ssssssssyNMMMNNNMMMMNNMMMMNyysssssss/    
+  +sssssssssshddmNMMNNmmdhyssssssssss+     
+   /ssssssssssssssyyyyysssssssssssss/      
+    .osssssssssssssssssssssssssssso.       
+      -+ssssssssssssssssssssssss+-         
+        \`:+ssssssssssssssssss+:\`           
+            .-/+oossssoo+/-.               ` });
+      else if (cmd === 'sudo') newHistory.push({ type: 'output', text: `[sudo] password for manav: \\nmanav is not in the sudoers file. This incident will be reported.` });
       else if (cmd === 'echo') newHistory.push({ type: 'output', text: args.slice(1).join(' ') });
       else if (cmd === 'ls') {
         const targetDir = resolvePath(args[1] || currentDir);
@@ -367,10 +394,10 @@ function App() {
             <div className="terminal-menubar"><span>File</span><span>Edit</span><span>View</span><span>Search</span><span>Terminal</span><span>Help</span></div>
             <div className="terminal-body">
               {termHistory.map((line, idx) => <div key={idx} className={line.type === 'input' ? 'prompt-line' : 'output-line'}>{line.text}</div>)}
-              <div className="prompt-active">
+              <form className="prompt-active" onSubmit={(e) => { e.preventDefault(); handleTerminalCommand({key: 'Enter'}); }}>
                 <span className="user">manav@ubuntu</span>:<span className="dir">{currentDir}</span>$ 
                 <input id="term-input" type="text" value={termInput} onChange={(e) => setTermInput(e.target.value)} onKeyDown={handleTerminalCommand} autoComplete="off" autoFocus />
-              </div>
+              </form>
               <div ref={terminalEndRef} />
             </div>
           </div>
@@ -441,6 +468,23 @@ function App() {
                 <div className="ubuntu-file"><span className="file-icon">🐍</span><p>flask_api.py</p></div>
                 <div className="ubuntu-file"><span className="file-icon">📄</span><p>QR_Gen.py</p></div>
               </div>
+            </div>
+          </div>
+        );
+      case 'trash':
+        return (
+          <div className="app-content nautilus-app">
+            <div className="nautilus-sidebar">
+              <ul>
+                <li>🏠 Home</li>
+                <li>📄 Documents</li>
+                <li>⬇️ Downloads</li>
+                <li className="active">🗑️ Trash</li>
+              </ul>
+            </div>
+            <div className="nautilus-main" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ fontSize: '4rem', opacity: 0.5, marginBottom: '20px' }}>🗑️</div>
+              <h2 style={{ color: '#aaa' }}>Trash is empty</h2>
             </div>
           </div>
         );
@@ -539,6 +583,8 @@ function App() {
             ></iframe>
           </div>
         );
+      case 'calculator':
+        return <div className="app-content calculator-app"><CalculatorApp /></div>;
       case 'playzone': return <div className="app-content playzone-app"><Playzone theme="dark" /></div>;
       default: return null;
     }
@@ -553,6 +599,7 @@ function App() {
         </div>
         <div style={{paddingBottom: '10vh', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
           <div className="ubuntu-spinner" style={{width: '35px', height: '35px', borderWidth: '3px'}}></div>
+          <div style={{marginTop: '20px', fontSize: '0.9rem', color: '#aaa', minHeight: '1.2rem'}}>{bootText[bootText.length - 1] || "..."}</div>
         </div>
       </div>
     );
@@ -584,7 +631,6 @@ function App() {
         <div className="top-left">Activities</div>
         <div className="top-center" style={{display: 'flex', alignItems: 'center', gap: '15px'}}>
           {date} {time}
-          <img src="https://api.visitorbadge.io/api/visitors?path=mnv.portfolio.v1&countColor=%23E95420" alt="visitors" style={{height: '20px'}} title="Live Visits" />
         </div>
         <div className="top-right" onClick={() => { playSound('click'); setTrayOpen(!trayOpen); }}>
           <WifiSVG /><VolSVG /><BattSVG />
@@ -665,7 +711,7 @@ function App() {
               <span className="d-icon">☕</span>
               <span className="d-name">Buy Chai</span>
             </div>
-            <div className="desktop-file" onDoubleClick={() => {}}>
+            <div className="desktop-file" onDoubleClick={() => toggleApp('trash')}>
               <span className="d-icon">🗑️</span>
               <span className="d-name">Trash</span>
             </div>

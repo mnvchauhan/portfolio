@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const Playzone = ({ theme }) => {
+const Playzone = () => {
   const [activeView, setActiveView] = useState('menu'); 
 
   // --- SNAKE GAME STATE ---
@@ -117,7 +117,10 @@ const Playzone = ({ theme }) => {
   };
 
   useEffect(() => {
-    if (activeView === 'memory' && cards.length === 0) startMemoryGame();
+    if (activeView === 'memory' && cards.length === 0) {
+      startMemoryGame();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeView]);
 
   useEffect(() => {

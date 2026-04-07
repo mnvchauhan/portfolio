@@ -210,17 +210,68 @@ body {
    📱 MOBILE RESPONSIVENESS
 ========================================= */
 @media (max-width: 768px) {
-  .bottom-dock { width: 95%; height: 60px; bottom: 5px; gap: 8px; padding: 0 10px; overflow-x: auto; flex-wrap: nowrap; justify-content: flex-start; }
-  .dock-icon { width: 42px; height: 42px; font-size: 1.5rem; flex-shrink: 0;}
-  .dock-icon:hover { transform: none; margin: 0; }
+  .top-left { display: none; }
+  .top-center { font-size: 0.8rem; }
+  .top-center img { height: 16px !important; }
+  .top-bar { padding: 0 10px; }
+  .top-right { gap: 4px; padding: 2px 4px; }
+  .tray-icon { width: 14px; height: 14px; }
+  .quick-settings { width: 90vw; right: 5vw; top: 35px; }
+  .wp-menu { width: 90vw; max-height: 70vh; }
+  .wp-grid { grid-template-columns: 1fr; }
+  
+  .bottom-dock { width: auto; max-width: 95%; height: 60px; bottom: 5px; gap: 12px; padding: 0 15px; overflow-x: auto; flex-wrap: nowrap; justify-content: center; }
+  .dock-icon { width: 42px; height: 42px; font-size: 1.5rem; flex-shrink: 0; margin: 0 2px;}
+  .dock-icon:hover { transform: none; margin: 0 2px; }
+  
   .desktop-files-grid { display: none; } 
   .ubuntu-window { top: 0 !important; left: 0 !important; width: 100% !important; height: calc(100% - 65px) !important; border-radius: 0; transform: none !important; }
   .resize-handle { display: none; }
-  .window-header { cursor: default; }
+  .window-header { cursor: default; padding: 0 10px; }
+  .window-title { font-size: 0.85rem; }
+  
   .nautilus-app, .vscode-app { flex-direction: column; }
-  .nautilus-sidebar, .vscode-sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #111;}
-  .nautilus-sidebar ul, .vscode-sidebar ul { display: flex; gap: 10px; overflow-x: auto; padding: 10px;}
-  .dock-icon-img, .desktop-icon-img { width: auto !important; height: 70% !important; object-fit: contain;}
+  .nautilus-sidebar, .vscode-sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #111; padding: 10px; }
+  .nautilus-sidebar ul, .vscode-sidebar ul { display: flex; gap: 5px; overflow-x: auto; padding: 0; margin: 0; align-items: center;}
+  .nautilus-sidebar li, .vscode-sidebar li { padding: 5px 12px; margin-bottom: 0; white-space: nowrap; font-size: 0.85rem; }
+  .nautilus-sidebar p, .vscode-sidebar p { display: none; } 
+  .nautilus-main { padding: 15px; }
+  .ubuntu-grid { gap: 15px; justify-content: center; }
+  .ubuntu-file { width: 80px; padding: 10px; }
+  .file-icon { font-size: 2.5rem; }
+  
+  .dock-icon-img, .desktop-icon-img { width: 100% !important; height: 100% !important; max-height: 35px; max-width: 35px; object-fit: contain;}
+  .app-drawer-grid { gap: 15px; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); }
+  .drawer-icon { width: 50px; height: 50px; margin-bottom: 5px; }
+  .drawer-name { font-size: 0.8rem; }
+  
+  .terminal-body { padding: 10px; }
+  .terminal-menubar { display: none; }
+  .prompt-active { flex-wrap: wrap; }
+  .prompt-active input { min-width: 150px; width: 100%; margin-left: 0; margin-top: 5px; }
+  
+  .experience-body { padding: 0 5px; }
+  .exp-timeline-item { margin-bottom: 20px; padding-left: 20px; }
+  .exp-timeline-item h3 { font-size: 1.1rem; }
+  
+  .browser-nav { padding: 5px; }
+  .url-bar { font-size: 0.8rem; padding: 5px 10px; }
+  .browser-body { padding: 15px; }
+  .search-box { margin: 15px auto; padding: 10px 15px; font-size: 0.9rem; }
+  .search-results h3 a { font-size: 1rem; }
+  
+  .login-form { width: 90vw; max-width: 320px; }
+  .user-avatar { width: 80px; height: 80px; font-size: 2.5rem; margin-bottom: 15px; }
+  .user-name { font-size: 1.2rem; }
+  
+  .vscode-tabs { padding-right: 5px; }
+  .active-tab { padding: 5px 10px; font-size: 0.85rem; white-space: nowrap;}
+  .run-btn { padding: 4px 8px; font-size: 0.75rem; white-space: nowrap; margin-left: auto;}
+  
+  .game-icons-grid { gap: 15px; }
+  .icon-box { width: 60px; height: 60px; font-size: 2rem; }
+  .memory-grid { max-width: 300px; }
+  .memory-card-front, .memory-card-back { font-size: 1.4rem; }
 }
 
 /* =========================================
